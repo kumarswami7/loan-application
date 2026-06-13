@@ -1,5 +1,6 @@
 import {
   forwardRef,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -71,9 +72,9 @@ const Step1LoanType = forwardRef(function Step1LoanType(_props, ref) {
     previousLoanType.current = loanType;
   }, [getValues, loanType, setValue]);
 
-  const onValid = (data) => {
+  const onValid = useCallback((data) => {
     updateStepData('loanType', data);
-  };
+  }, [updateStepData]);
 
   useImperativeHandle(ref, () => ({
     async validateAndSubmit() {
@@ -89,7 +90,7 @@ const Step1LoanType = forwardRef(function Step1LoanType(_props, ref) {
       )();
       return isValid;
     },
-  }), [handleSubmit]);
+  }), [handleSubmit, onValid]);
 
   const amountHelp = loanType
     ? `Min: ${toLakhCroreLabel(LOAN_CONSTRAINTS[loanType].min)} | Max: ${toLakhCroreLabel(LOAN_CONSTRAINTS[loanType].max)}`

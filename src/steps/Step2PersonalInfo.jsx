@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from 'react';
+import { forwardRef, useCallback, useImperativeHandle } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Input from '../components/common/Input';
@@ -36,9 +36,9 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
     },
   });
 
-  const onValid = (data) => {
+  const onValid = useCallback((data) => {
     updateStepData('personalInfo', data);
-  };
+  }, [updateStepData]);
 
   useImperativeHandle(ref, () => ({
     async validateAndSubmit() {
@@ -54,7 +54,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
       )();
       return isValid;
     },
-  }), [handleSubmit]);
+  }), [handleSubmit, onValid]);
 
   return (
     <form onSubmit={handleSubmit(onValid)} noValidate className="space-y-5">
