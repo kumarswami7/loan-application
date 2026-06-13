@@ -38,6 +38,8 @@ function validateConditionalAddress(data, ctx, prefix, label) {
   if (!line1) addRequiredIssue(ctx, `${prefix}AddressLine1`, `${label} address line 1 is required`);
   else if (line1.trim().length < 5) {
     addRequiredIssue(ctx, `${prefix}AddressLine1`, `${label} address line 1 must be at least 5 characters`);
+  } else if (line1.trim().length > 200) {
+    addRequiredIssue(ctx, `${prefix}AddressLine1`, `${label} address line 1 must be 200 characters or fewer`);
   }
 
   if (!pin) addRequiredIssue(ctx, `${prefix}Pincode`, `${label} PIN code is required`);
