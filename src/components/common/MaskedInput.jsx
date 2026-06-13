@@ -27,7 +27,12 @@ const MaskedInput = forwardRef(function MaskedInput(
     isVerifying,
     maskAfterLength,
     visibleChars,
+    name,
+    onChange,
     onBlur,
+    onFocus,
+    type,
+    value,
     className,
     ...rest
   },
@@ -41,11 +46,11 @@ const MaskedInput = forwardRef(function MaskedInput(
   const [revealed, setRevealed] = useState(false);
   const [focused, setFocused] = useState(false);
 
-  const rawValue = rest.value ?? '';
+  const rawValue = value ?? '';
   const shouldMask =
     !focused && !revealed && rawValue.length >= maskAfterLength;
 
-  const displayType = shouldMask ? 'text' : rest.type || 'text';
+  const displayType = shouldMask ? 'text' : type;
 
   const maskedValue = shouldMask
     ? 'X'.repeat(Math.max(rawValue.length - visibleChars, 0)) +
@@ -72,11 +77,17 @@ const MaskedInput = forwardRef(function MaskedInput(
 
       <div className="relative">
         <input
+          {...rest}
           ref={ref}
           id={id}
+          name={name}
           type={displayType}
           value={maskedValue}
-          onFocus={() => setFocused(true)}
+          onChange={onChange}
+          onFocus={(event) => {
+            setFocused(true);
+            onFocus?.(event);
+          }}
           onBlur={(e) => {
             setFocused(false);
             onBlur?.(e);
@@ -93,7 +104,6 @@ const MaskedInput = forwardRef(function MaskedInput(
             disabled:bg-gray-100 disabled:cursor-not-allowed
             ${error ? 'border-error bg-error-light' : 'border-gray-300 bg-white'}
             ${className || ''}`}
-          {...rest}
         />
 
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
@@ -148,6 +158,11 @@ MaskedInput.propTypes = {
   /** Number of trailing characters to keep visible when masked */
   visibleChars: PropTypes.number,
   onBlur: PropTypes.func,
+  onChange: PropTypes.func,
+  onFocus: PropTypes.func,
+  name: PropTypes.string,
+  type: PropTypes.string,
+  value: PropTypes.string,
   className: PropTypes.string,
 };
 
@@ -161,6 +176,11 @@ MaskedInput.defaultProps = {
   maskAfterLength: 4,
   visibleChars: 4,
   onBlur: undefined,
+  onChange: undefined,
+  onFocus: undefined,
+  name: undefined,
+  type: 'text',
+  value: '',
   className: undefined,
 };
 
