@@ -23,6 +23,10 @@ export default function useAutoSave(formData, currentStepId, loanType, interval 
       step: currentStepId,
       loanType,
     }));
+    if (loanType) {
+      localStorage.removeItem('lendswift_draft_unknown');
+      localStorage.removeItem('lendswift_draft_meta_unknown');
+    }
 
     clearTimeout(toastTimer.current);
     setToast({
@@ -39,6 +43,15 @@ export default function useAutoSave(formData, currentStepId, loanType, interval 
     await saveDraft();
   }, [saveDraft]);
 
+  const dismissToast = useCallback(() => {
+    clearTimeout(toastTimer.current);
+    setToast((current) => ({ ...current, showToast: false }));
+  }, []);
+
+  const cancelAutoSave = useCallback(() => {
+    clearTimeout(debounceTimer.current);
+  }, []);
+
   useEffect(() => {
     clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
@@ -54,5 +67,7 @@ export default function useAutoSave(formData, currentStepId, loanType, interval 
     showToast: toast.showToast,
     toastMessage: toast.toastMessage,
     triggerManualSave,
+    dismissToast,
+    cancelAutoSave,
   };
 }

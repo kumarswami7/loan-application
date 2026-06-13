@@ -19,10 +19,12 @@ function inspectSavedDrafts() {
   const validDrafts = [];
   const now = Date.now();
 
-  for (let index = 0; index < localStorage.length; index += 1) {
-    const key = localStorage.key(index);
-    if (!key?.startsWith(META_PREFIX)) continue;
+  const metadataKeys = Array.from(
+    { length: localStorage.length },
+    (_, index) => localStorage.key(index),
+  ).filter((key) => key?.startsWith(META_PREFIX));
 
+  metadataKeys.forEach((key) => {
     const suffix = key.slice(META_PREFIX.length);
     try {
       const metadata = JSON.parse(localStorage.getItem(key));
@@ -37,7 +39,7 @@ function inspectSavedDrafts() {
       localStorage.removeItem(key);
       localStorage.removeItem(`${DRAFT_PREFIX}${suffix}`);
     }
-  }
+  });
 
   if (validDrafts.length === 0) return { hasSavedDraft: false, draftMeta: null };
   validDrafts.sort((left, right) => new Date(right.timestamp) - new Date(left.timestamp));

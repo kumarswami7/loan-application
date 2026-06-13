@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useRef } from 'react';
 import ProgressBar from './ProgressBar';
+import ResumeDraftModal from './ResumeDraftModal';
 import StepNavigation from './StepNavigation';
 import { STEP_REGISTRY, getVisibleSteps } from './stepRegistry';
 import { FormDataContext } from './FormDataContext';
@@ -10,6 +11,11 @@ import Step3KYC from '../../steps/Step3KYC';
 import Step4Address from '../../steps/Step4Address';
 import Step5Employment from '../../steps/Step5Employment';
 import Step6CoApplicant from '../../steps/Step6CoApplicant';
+import useAutoSave from '../../hooks/useAutoSave';
+import useFormPersistence, {
+  clearDraft,
+  resumeDraft,
+} from '../../hooks/useFormPersistence';
 
 // Map of stepId -> component. Real step components will replace
 // PlaceholderStep here as they're built (Days 3-9 of the plan).
@@ -39,7 +45,23 @@ export default function Wizard() {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [currentStepId, setCurrentStepId] = useState(STEP_REGISTRY[0].id);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const persistence = useFormPersistence();
+  const [showResumeModal, setShowResumeModal] = useState(persistence.hasSavedDraft);
+  const [restoreMessage, setRestoreMessage] = useState('');
   const stepRef = useRef(null);
+
+  const {
+    showToast,
+    toastMessage,
+    triggerManualSave,
+    dismissToast,
+    cancelAutoSave,
+  } = useAutoSave(
+    formData,
+    currentStepId,
+    formData.loanType?.loanType,
+    30000,
+  );
 
   // Recompute visible steps whenever form data changes (e.g. loan type/amount
   // change affects whether the Co-Applicant step is shown - Section B3).
@@ -77,10 +99,13 @@ export default function Wizard() {
       });
     } else {
       // Last step -> submit
+      // TODO Step 8: call this only after the real submission succeeds.
+      cancelAutoSave();
+      clearDraft(formData.loanType?.loanType);
       setIsSubmitting(true);
       // Submission logic will be wired up in Step 8 (Review).
     }
-  }, [safeIndex, visibleSteps]);
+  }, [cancelAutoSave, formData.loanType?.loanType, safeIndex, visibleSteps]);
 
   const goPrevious = useCallback(() => {
     if (safeIndex > 0) {
@@ -93,12 +118,40 @@ export default function Wizard() {
   }, [safeIndex, visibleSteps]);
 
   const handleSaveDraft = useCallback(() => {
-    // Will be replaced by useAutoSave's manual-save trigger (Day 7).
-    console.info('Draft save requested (auto-save hook pending implementation).');
-  }, []);
+    void triggerManualSave();
+  }, [triggerManualSave]);
+
+  const handleResumeDraft = useCallback(async () => {
+    const loanType = persistence.draftMeta?.loanType;
+    const restored = await resumeDraft(loanType);
+    setShowResumeModal(false);
+    if (restored) {
+      setFormData(restored.formData);
+      setCurrentStepId(restored.currentStepId);
+    } else {
+      setFormData(INITIAL_FORM_DATA);
+      setCurrentStepId(STEP_REGISTRY[0].id);
+      setRestoreMessage('Your saved draft could not be restored and has been cleared. Starting fresh.');
+      setTimeout(() => setRestoreMessage(''), 4000);
+    }
+  }, [persistence.draftMeta?.loanType]);
+
+  const handleStartFresh = useCallback(() => {
+    clearDraft(persistence.draftMeta?.loanType);
+    setFormData(INITIAL_FORM_DATA);
+    setCurrentStepId(STEP_REGISTRY[0].id);
+    setShowResumeModal(false);
+  }, [persistence.draftMeta?.loanType]);
 
   return (
     <FormDataContext.Provider value={{ formData, updateStepData }}>
+      {showResumeModal && (
+        <ResumeDraftModal
+          loanType={persistence.draftMeta?.loanType}
+          onResume={handleResumeDraft}
+          onStartFresh={handleStartFresh}
+        />
+      )}
       <div className="max-w-3xl mx-auto px-4 py-8">
         <header className="mb-6">
           <h1 className="text-2xl font-bold text-primary">LendSwift Loan Application</h1>
@@ -133,6 +186,21 @@ export default function Wizard() {
           isSubmitting={isSubmitting}
         />
       </div>
+
+      {restoreMessage && (
+        <div role="status" className="fixed bottom-4 right-4 max-w-sm rounded bg-amber-700 px-4 py-2 text-white shadow-lg">
+          {restoreMessage}
+        </div>
+      )}
+
+      {showToast && (
+        <div role="status" className="fixed bottom-4 right-4 flex items-center gap-3 rounded bg-accent px-4 py-2 text-white shadow-lg">
+          <span>{toastMessage}</span>
+          <button type="button" onClick={dismissToast} aria-label="Dismiss draft saved notification" className="font-bold">
+            ×
+          </button>
+        </div>
+      )}
     </FormDataContext.Provider>
   );
 }
