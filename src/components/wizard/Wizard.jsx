@@ -9,6 +9,7 @@ import Step2PersonalInfo from '../../steps/Step2PersonalInfo';
 import Step3KYC from '../../steps/Step3KYC';
 import Step4Address from '../../steps/Step4Address';
 import Step5Employment from '../../steps/Step5Employment';
+import Step6CoApplicant from '../../steps/Step6CoApplicant';
 
 // Map of stepId -> component. Real step components will replace
 // PlaceholderStep here as they're built (Days 3-9 of the plan).
@@ -18,7 +19,7 @@ const STEP_COMPONENTS = {
   kyc: Step3KYC,
   address: Step4Address,
   employment: Step5Employment,
-  coApplicant: PlaceholderStep,
+  coApplicant: Step6CoApplicant,
   documents: PlaceholderStep,
   review: PlaceholderStep,
 };
