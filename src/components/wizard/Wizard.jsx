@@ -1,15 +1,17 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import ProgressBar from './ProgressBar';
 import StepNavigation from './StepNavigation';
 import { STEP_REGISTRY, getVisibleSteps } from './stepRegistry';
 import { FormDataContext } from './FormDataContext';
 import PlaceholderStep from '../../steps/PlaceholderStep';
+import Step1LoanType from '../../steps/Step1LoanType';
+import Step2PersonalInfo from '../../steps/Step2PersonalInfo';
 
 // Map of stepId -> component. Real step components will replace
 // PlaceholderStep here as they're built (Days 3-9 of the plan).
 const STEP_COMPONENTS = {
-  loanType: PlaceholderStep,
-  personalInfo: PlaceholderStep,
+  loanType: Step1LoanType,
+  personalInfo: Step2PersonalInfo,
   kyc: PlaceholderStep,
   address: PlaceholderStep,
   employment: PlaceholderStep,
@@ -33,6 +35,7 @@ export default function Wizard() {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [currentStepId, setCurrentStepId] = useState(STEP_REGISTRY[0].id);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const stepRef = useRef(null);
 
   // Recompute visible steps whenever form data changes (e.g. loan type/amount
   // change affects whether the Co-Applicant step is shown - Section B3).
@@ -54,7 +57,13 @@ export default function Wizard() {
     setFormData((prev) => ({ ...prev, [stepId]: { ...prev[stepId], ...data } }));
   }, []);
 
-  const goNext = useCallback(() => {
+  const goNext = useCallback(async () => {
+    const isValid = stepRef.current?.validateAndSubmit
+      ? await stepRef.current.validateAndSubmit()
+      : true;
+
+    if (!isValid) return;
+
     if (safeIndex < visibleSteps.length - 1) {
       const nextStep = visibleSteps[safeIndex + 1];
       setCurrentStepId(nextStep.id);
@@ -105,6 +114,7 @@ export default function Wizard() {
             {currentStep.label}
           </h2>
           <StepComponent
+            ref={stepRef}
             stepId={currentStep.id}
             stepLabel={currentStep.label}
           />
