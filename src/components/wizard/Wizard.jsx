@@ -6,13 +6,14 @@ import { FormDataContext } from './FormDataContext';
 import PlaceholderStep from '../../steps/PlaceholderStep';
 import Step1LoanType from '../../steps/Step1LoanType';
 import Step2PersonalInfo from '../../steps/Step2PersonalInfo';
+import Step3KYC from '../../steps/Step3KYC';
 
 // Map of stepId -> component. Real step components will replace
 // PlaceholderStep here as they're built (Days 3-9 of the plan).
 const STEP_COMPONENTS = {
   loanType: Step1LoanType,
   personalInfo: Step2PersonalInfo,
-  kyc: PlaceholderStep,
+  kyc: Step3KYC,
   address: PlaceholderStep,
   employment: PlaceholderStep,
   coApplicant: PlaceholderStep,
