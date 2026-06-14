@@ -24,10 +24,11 @@ import { getMaxTenureMonths } from '../schemas/step2Schema';
 import { toLakhCroreLabel } from '../utils/numberFormat';
 
 const Step1LoanType = forwardRef(function Step1LoanType(_props, ref) {
-  const { formData, updateStepData } = useFormData();
+  const { formData, draftStepData, updateStepData } = useFormData();
+  const savedData = { ...formData.loanType, ...draftStepData?.loanType };
   const maxTenureMonths = getMaxTenureMonths(formData.personalInfo?.dateOfBirth);
   const schema = useMemo(() => buildStep1Schema(maxTenureMonths), [maxTenureMonths]);
-  const previousLoanType = useRef(formData.loanType?.loanType);
+  const previousLoanType = useRef(savedData.loanType);
 
   const {
     control,
@@ -42,11 +43,11 @@ const Step1LoanType = forwardRef(function Step1LoanType(_props, ref) {
     mode: 'onBlur',
     shouldFocusError: true,
     defaultValues: {
-      loanType: formData.loanType?.loanType || '',
-      loanAmount: formData.loanType?.loanAmount || '',
-      loanTenure: formData.loanType?.loanTenure || '',
-      loanPurpose: formData.loanType?.loanPurpose || '',
-      referralCode: formData.loanType?.referralCode || '',
+      loanType: savedData.loanType || '',
+      loanAmount: savedData.loanAmount || '',
+      loanTenure: savedData.loanTenure || '',
+      loanPurpose: savedData.loanPurpose || '',
+      referralCode: savedData.referralCode || '',
     },
   });
 
@@ -77,6 +78,7 @@ const Step1LoanType = forwardRef(function Step1LoanType(_props, ref) {
   }, [updateStepData]);
 
   useImperativeHandle(ref, () => ({
+    getDirtyValues: () => getValues(),
     async validateAndSubmit() {
       let isValid = false;
       await handleSubmit(
@@ -90,7 +92,7 @@ const Step1LoanType = forwardRef(function Step1LoanType(_props, ref) {
       )();
       return isValid;
     },
-  }), [handleSubmit, onValid]);
+  }), [getValues, handleSubmit, onValid]);
 
   const amountHelp = loanType
     ? `Min: ${toLakhCroreLabel(LOAN_CONSTRAINTS[loanType].min)} | Max: ${toLakhCroreLabel(LOAN_CONSTRAINTS[loanType].max)}`

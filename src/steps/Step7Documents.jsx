@@ -32,8 +32,11 @@ function initialFileEntries(savedDocuments, documentId) {
 }
 
 const Step7Documents = forwardRef(function Step7Documents(_props, ref) {
-  const { formData, updateStepData } = useFormData();
-  const savedDocuments = useMemo(() => formData.documents || {}, [formData.documents]);
+  const { formData, draftStepData, updateStepData } = useFormData();
+  const savedDocuments = useMemo(() => ({
+    ...formData.documents,
+    ...draftStepData?.documents,
+  }), [draftStepData?.documents, formData.documents]);
   const documentRequirements = useMemo(() => getDocumentRequirements(formData), [formData]);
   const schema = useMemo(() => buildStep7Schema(formData), [formData]);
   const showCoApplicantSignature = isCoApplicantStepVisible(formData);
@@ -57,6 +60,7 @@ const Step7Documents = forwardRef(function Step7Documents(_props, ref) {
   const {
     control,
     formState: { errors },
+    getValues,
     handleSubmit,
     setValue,
   } = useForm({
@@ -80,6 +84,7 @@ const Step7Documents = forwardRef(function Step7Documents(_props, ref) {
   }, [documentFiles, showCoApplicantSignature, updateStepData]);
 
   useImperativeHandle(ref, () => ({
+    getDirtyValues: () => ({ ...getValues(), documentFiles }),
     async validateAndSubmit() {
       let isValid = false;
       await handleSubmit(
@@ -91,7 +96,7 @@ const Step7Documents = forwardRef(function Step7Documents(_props, ref) {
       )();
       return isValid;
     },
-  }), [handleSubmit, onValid]);
+  }), [documentFiles, getValues, handleSubmit, onValid]);
 
   return (
     <form onSubmit={handleSubmit(onValid)} noValidate className="space-y-7">

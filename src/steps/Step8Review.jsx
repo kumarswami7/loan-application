@@ -143,7 +143,8 @@ function SuccessModal({ referenceNumber }) {
 SuccessModal.propTypes = { referenceNumber: PropTypes.string.isRequired };
 
 const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) {
-  const { formData, goToStep } = useFormData();
+  const { formData, draftStepData, goToStep } = useFormData();
+  const savedReview = { ...formData.review, ...draftStepData?.review };
   const combinedMonthlyIncome = Number(formData.employment?.monthlyIncomeForEMI || 0)
     + (formData.coApplicant?.coApplicantIncome ? Number(formData.coApplicant.coApplicantIncome) : 0);
   const loanSummary = useMemo(() => buildLoanSummary(
@@ -169,17 +170,18 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
   const {
     control,
     formState: { errors },
+    getValues,
     handleSubmit,
     register,
   } = useForm({
     resolver: zodResolver(schema),
     mode: 'onBlur',
     defaultValues: {
-      consentAccuracy: formData.review?.consentAccuracy || false,
-      consentCreditCheck: formData.review?.consentCreditCheck || false,
-      consentTerms: formData.review?.consentTerms || false,
-      consentCommunications: formData.review?.consentCommunications || false,
-      emiAffordabilityAcknowledged: formData.review?.emiAffordabilityAcknowledged || false,
+      consentAccuracy: savedReview.consentAccuracy || false,
+      consentCreditCheck: savedReview.consentCreditCheck || false,
+      consentTerms: savedReview.consentTerms || false,
+      consentCommunications: savedReview.consentCommunications || false,
+      emiAffordabilityAcknowledged: savedReview.emiAffordabilityAcknowledged || false,
     },
   });
   const values = useWatch({ control });
@@ -207,6 +209,7 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
   }, [formData.loanType?.loanType, missingDocuments.length, missingSignatures.length]);
 
   useImperativeHandle(ref, () => ({
+    getDirtyValues: () => getValues(),
     async validateAndSubmit() {
       let isValid = false;
       await handleSubmit(
@@ -215,7 +218,7 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
       )();
       return isValid;
     },
-  }), [handleSubmit, submitApplication]);
+  }), [getValues, handleSubmit, submitApplication]);
 
   const missingItems = [
     ...(!values.consentAccuracy ? ['Confirm information accuracy'] : []),

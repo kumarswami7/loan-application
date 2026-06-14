@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import ProgressBar from './ProgressBar';
 import ResumeDraftModal from './ResumeDraftModal';
 import StepNavigation from './StepNavigation';
@@ -42,6 +42,7 @@ const INITIAL_FORM_DATA = {
 
 export default function Wizard() {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+  const [draftStepData, setDraftStepData] = useState({});
   const [currentStepId, setCurrentStepId] = useState(STEP_REGISTRY[0].id);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isReviewReady, setIsReviewReady] = useState(false);
@@ -83,11 +84,22 @@ export default function Wizard() {
     setFormData((prev) => ({ ...prev, [stepId]: { ...prev[stepId], ...data } }));
   }, []);
 
+  const saveDraftStepData = useCallback((stepId, data) => {
+    setDraftStepData((previous) => ({ ...previous, [stepId]: data }));
+  }, []);
+
+  const captureCurrentStepDraft = useCallback(() => {
+    const values = stepRef.current?.getDirtyValues?.();
+    if (values) saveDraftStepData(currentStep.id, values);
+  }, [currentStep.id, saveDraftStepData]);
+
   const goToStep = useCallback((stepId) => {
     if (!visibleSteps.some((step) => step.id === stepId)) return;
+    captureCurrentStepDraft();
     setCurrentStepId(stepId);
+    history.pushState({ step: stepId }, '', `#${stepId}`);
     requestAnimationFrame(() => document.getElementById('step-heading')?.focus());
-  }, [visibleSteps]);
+  }, [captureCurrentStepDraft, visibleSteps]);
 
   const goNext = useCallback(async () => {
     const isValid = stepRef.current?.validateAndSubmit
@@ -96,9 +108,16 @@ export default function Wizard() {
 
     if (!isValid) return;
 
+    setDraftStepData((previous) => {
+      const next = { ...previous };
+      delete next[currentStep.id];
+      return next;
+    });
+
     if (safeIndex < visibleSteps.length - 1) {
       const nextStep = visibleSteps[safeIndex + 1];
       setCurrentStepId(nextStep.id);
+      history.pushState({ step: nextStep.id }, '', `#${nextStep.id}`);
       // Move focus to the new step's heading for accessibility (WCAG 2.4.3)
       requestAnimationFrame(() => {
         document.getElementById('step-heading')?.focus();
@@ -108,17 +127,31 @@ export default function Wizard() {
       setIsSubmitting(true);
       setIsSubmitting(false);
     }
-  }, [cancelAutoSave, safeIndex, visibleSteps]);
+  }, [cancelAutoSave, currentStep.id, safeIndex, visibleSteps]);
 
   const goPrevious = useCallback(() => {
     if (safeIndex > 0) {
+      captureCurrentStepDraft();
       const prevStep = visibleSteps[safeIndex - 1];
       setCurrentStepId(prevStep.id);
       requestAnimationFrame(() => {
         document.getElementById('step-heading')?.focus();
       });
     }
-  }, [safeIndex, visibleSteps]);
+  }, [captureCurrentStepDraft, safeIndex, visibleSteps]);
+
+  useEffect(() => {
+    const initialStepId = STEP_REGISTRY[0].id;
+    history.replaceState({ step: initialStepId }, '', `#${initialStepId}`);
+  }, []); // Page refresh intentionally starts from persisted state or Step 1.
+
+  useEffect(() => {
+    // Best-effort wizard history, not a router: refreshing a hash still uses
+    // the saved draft or Step 1 as the source of truth.
+    const handlePopState = () => goPrevious();
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [goPrevious]);
 
   const handleSaveDraft = useCallback(() => {
     void triggerManualSave();
@@ -130,6 +163,7 @@ export default function Wizard() {
     setShowResumeModal(false);
     if (restored) {
       setFormData(restored.formData);
+      setDraftStepData({});
       setCurrentStepId(restored.currentStepId);
     } else {
       setFormData(INITIAL_FORM_DATA);
@@ -142,12 +176,19 @@ export default function Wizard() {
   const handleStartFresh = useCallback(() => {
     clearDraft(persistence.draftMeta?.loanType);
     setFormData(INITIAL_FORM_DATA);
+    setDraftStepData({});
     setCurrentStepId(STEP_REGISTRY[0].id);
     setShowResumeModal(false);
   }, [persistence.draftMeta?.loanType]);
 
   return (
-    <FormDataContext.Provider value={{ formData, updateStepData, goToStep }}>
+    <FormDataContext.Provider value={{
+      formData,
+      draftStepData,
+      updateStepData,
+      saveDraftStepData,
+      goToStep,
+    }}>
       {showResumeModal && (
         <ResumeDraftModal
           loanType={persistence.draftMeta?.loanType}

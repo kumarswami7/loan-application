@@ -11,12 +11,13 @@ import step2Schema, {
 } from '../schemas/step2Schema';
 
 const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
-  const { formData, updateStepData } = useFormData();
-  const savedData = formData.personalInfo || {};
+  const { formData, draftStepData, updateStepData } = useFormData();
+  const savedData = { ...formData.personalInfo, ...draftStepData?.personalInfo };
 
   const {
     control,
     formState: { errors },
+    getValues,
     handleSubmit,
     register,
   } = useForm({
@@ -41,6 +42,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
   }, [updateStepData]);
 
   useImperativeHandle(ref, () => ({
+    getDirtyValues: () => getValues(),
     async validateAndSubmit() {
       let isValid = false;
       await handleSubmit(
@@ -54,7 +56,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
       )();
       return isValid;
     },
-  }), [handleSubmit, onValid]);
+  }), [getValues, handleSubmit, onValid]);
 
   return (
     <form onSubmit={handleSubmit(onValid)} noValidate className="space-y-5">

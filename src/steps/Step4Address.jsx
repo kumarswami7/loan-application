@@ -29,8 +29,8 @@ function LookupStatus({ lookup }) {
 }
 
 const Step4Address = forwardRef(function Step4Address(_props, ref) {
-  const { formData, updateStepData } = useFormData();
-  const savedData = formData.address || {};
+  const { formData, draftStepData, updateStepData } = useFormData();
+  const savedData = { ...formData.address, ...draftStepData?.address };
   const [currentStateBlurred, setCurrentStateBlurred] = useState(false);
 
   const {
@@ -108,6 +108,7 @@ const Step4Address = forwardRef(function Step4Address(_props, ref) {
   }, [updateStepData]);
 
   useImperativeHandle(ref, () => ({
+    getDirtyValues: () => getValues(),
     async validateAndSubmit() {
       let isValid = false;
       await handleSubmit(
@@ -121,7 +122,7 @@ const Step4Address = forwardRef(function Step4Address(_props, ref) {
       )();
       return isValid;
     },
-  }), [handleSubmit, onValid]);
+  }), [getValues, handleSubmit, onValid]);
 
   const showPreviousAddress = yearsAtCurrentAddress !== ''
     && Number.isFinite(Number(yearsAtCurrentAddress))

@@ -19,10 +19,10 @@ const CONSENT_TEXT = 'I hereby consent to LendSwift verifying my Aadhaar details
 const VERIFICATION_PENDING_MESSAGE = 'Please wait for verification to complete';
 
 const Step3KYC = forwardRef(function Step3KYC(_props, ref) {
-  const { formData, updateStepData } = useFormData();
+  const { formData, draftStepData, updateStepData } = useFormData();
   const loanType = formData.loanType?.loanType;
   const loanAmount = Number(formData.loanType?.loanAmount || 0);
-  const savedData = formData.kyc || {};
+  const savedData = { ...formData.kyc, ...draftStepData?.kyc };
   const showPassport = loanType === 'Home' && loanAmount > 5000000;
   const schema = useMemo(() => buildStep3Schema(loanType), [loanType]);
   const [verificationAttempted, setVerificationAttempted] = useState(false);
@@ -80,6 +80,7 @@ const Step3KYC = forwardRef(function Step3KYC(_props, ref) {
   }, [aadhaarVerification.isVerified, panVerification.isVerified, updateStepData]);
 
   useImperativeHandle(ref, () => ({
+    getDirtyValues: () => getValues(),
     async validateAndSubmit() {
       let isValid = false;
       await handleSubmit(
@@ -92,7 +93,7 @@ const Step3KYC = forwardRef(function Step3KYC(_props, ref) {
       )();
       return isValid;
     },
-  }), [handleSubmit, submitVerifiedData]);
+  }), [getValues, handleSubmit, submitVerifiedData]);
 
   const panError = errors.panNumber?.message
     || panVerification.error

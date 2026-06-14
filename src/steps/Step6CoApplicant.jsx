@@ -20,8 +20,8 @@ const CONSENT_TEXT = 'I, as co-applicant, consent to being added to this loan ap
 const VERIFICATION_PENDING_MESSAGE = 'Please wait for verification to complete';
 
 const Step6CoApplicant = forwardRef(function Step6CoApplicant(_props, ref) {
-  const { formData, updateStepData } = useFormData();
-  const savedData = formData.coApplicant || {};
+  const { formData, draftStepData, updateStepData } = useFormData();
+  const savedData = { ...formData.coApplicant, ...draftStepData?.coApplicant };
   const defaultRelationship = savedData.relationship
     || (formData.personalInfo?.maritalStatus === 'Married' ? 'Spouse' : '');
   const [verificationAttempted, setVerificationAttempted] = useState(false);
@@ -29,6 +29,7 @@ const Step6CoApplicant = forwardRef(function Step6CoApplicant(_props, ref) {
   const {
     control,
     formState: { errors },
+    getValues,
     handleSubmit,
     register,
     setFocus,
@@ -69,6 +70,7 @@ const Step6CoApplicant = forwardRef(function Step6CoApplicant(_props, ref) {
   }, [formData.employment?.monthlyIncomeForEMI, panVerification.isVerified, updateStepData]);
 
   useImperativeHandle(ref, () => ({
+    getDirtyValues: () => getValues(),
     async validateAndSubmit() {
       let isValid = false;
       await handleSubmit(
@@ -81,7 +83,7 @@ const Step6CoApplicant = forwardRef(function Step6CoApplicant(_props, ref) {
       )();
       return isValid;
     },
-  }), [handleSubmit, submitVerifiedData]);
+  }), [getValues, handleSubmit, submitVerifiedData]);
 
   const panError = errors.coApplicantPAN?.message
     || panVerification.error

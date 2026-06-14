@@ -207,15 +207,16 @@ function BusinessFields({ control, errors, register, setValue, showMonthlyIncome
 }
 
 const Step5Employment = forwardRef(function Step5Employment(_props, ref) {
-  const { formData, updateStepData } = useFormData();
+  const { formData, draftStepData, updateStepData } = useFormData();
   const loanType = formData.loanType?.loanType;
-  const savedData = formData.employment || {};
+  const savedData = { ...formData.employment, ...draftStepData?.employment };
   const schema = useMemo(() => buildStep5Schema(loanType), [loanType]);
   const previousEmploymentType = useRef(savedData.employmentType);
 
   const {
     control,
     formState: { errors },
+    getValues,
     handleSubmit,
     register,
     setFocus,
@@ -277,6 +278,7 @@ const Step5Employment = forwardRef(function Step5Employment(_props, ref) {
   }, [updateStepData]);
 
   useImperativeHandle(ref, () => ({
+    getDirtyValues: () => getValues(),
     async validateAndSubmit() {
       let isValid = false;
       await handleSubmit(
@@ -290,7 +292,7 @@ const Step5Employment = forwardRef(function Step5Employment(_props, ref) {
       )();
       return isValid;
     },
-  }), [handleSubmit, onValid]);
+  }), [getValues, handleSubmit, onValid]);
 
   return (
     <form onSubmit={handleSubmit(onValid)} noValidate className="space-y-6">
