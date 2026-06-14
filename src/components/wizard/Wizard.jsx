@@ -4,21 +4,20 @@ import ResumeDraftModal from './ResumeDraftModal';
 import StepNavigation from './StepNavigation';
 import { STEP_REGISTRY, getVisibleSteps } from './stepRegistry';
 import { FormDataContext } from './FormDataContext';
-import PlaceholderStep from '../../steps/PlaceholderStep';
 import Step1LoanType from '../../steps/Step1LoanType';
 import Step2PersonalInfo from '../../steps/Step2PersonalInfo';
 import Step3KYC from '../../steps/Step3KYC';
 import Step4Address from '../../steps/Step4Address';
 import Step5Employment from '../../steps/Step5Employment';
 import Step6CoApplicant from '../../steps/Step6CoApplicant';
+import Step7Documents from '../../steps/Step7Documents';
+import Step8Review from '../../steps/Step8Review';
 import useAutoSave from '../../hooks/useAutoSave';
 import useFormPersistence, {
   clearDraft,
   resumeDraft,
 } from '../../hooks/useFormPersistence';
 
-// Map of stepId -> component. Real step components will replace
-// PlaceholderStep here as they're built (Days 3-9 of the plan).
 const STEP_COMPONENTS = {
   loanType: Step1LoanType,
   personalInfo: Step2PersonalInfo,
@@ -26,8 +25,8 @@ const STEP_COMPONENTS = {
   address: Step4Address,
   employment: Step5Employment,
   coApplicant: Step6CoApplicant,
-  documents: PlaceholderStep,
-  review: PlaceholderStep,
+  documents: Step7Documents,
+  review: Step8Review,
 };
 
 const INITIAL_FORM_DATA = {
@@ -45,6 +44,7 @@ export default function Wizard() {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [currentStepId, setCurrentStepId] = useState(STEP_REGISTRY[0].id);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isReviewReady, setIsReviewReady] = useState(false);
   const persistence = useFormPersistence();
   const [showResumeModal, setShowResumeModal] = useState(persistence.hasSavedDraft);
   const [restoreMessage, setRestoreMessage] = useState('');
@@ -83,6 +83,12 @@ export default function Wizard() {
     setFormData((prev) => ({ ...prev, [stepId]: { ...prev[stepId], ...data } }));
   }, []);
 
+  const goToStep = useCallback((stepId) => {
+    if (!visibleSteps.some((step) => step.id === stepId)) return;
+    setCurrentStepId(stepId);
+    requestAnimationFrame(() => document.getElementById('step-heading')?.focus());
+  }, [visibleSteps]);
+
   const goNext = useCallback(async () => {
     const isValid = stepRef.current?.validateAndSubmit
       ? await stepRef.current.validateAndSubmit()
@@ -98,14 +104,11 @@ export default function Wizard() {
         document.getElementById('step-heading')?.focus();
       });
     } else {
-      // Last step -> submit
-      // TODO Step 8: call this only after the real submission succeeds.
       cancelAutoSave();
-      clearDraft(formData.loanType?.loanType);
       setIsSubmitting(true);
-      // Submission logic will be wired up in Step 8 (Review).
+      setIsSubmitting(false);
     }
-  }, [cancelAutoSave, formData.loanType?.loanType, safeIndex, visibleSteps]);
+  }, [cancelAutoSave, safeIndex, visibleSteps]);
 
   const goPrevious = useCallback(() => {
     if (safeIndex > 0) {
@@ -144,7 +147,7 @@ export default function Wizard() {
   }, [persistence.draftMeta?.loanType]);
 
   return (
-    <FormDataContext.Provider value={{ formData, updateStepData }}>
+    <FormDataContext.Provider value={{ formData, updateStepData, goToStep }}>
       {showResumeModal && (
         <ResumeDraftModal
           loanType={persistence.draftMeta?.loanType}
@@ -174,6 +177,7 @@ export default function Wizard() {
             ref={stepRef}
             stepId={currentStep.id}
             stepLabel={currentStep.label}
+            onReadinessChange={setIsReviewReady}
           />
         </main>
 
@@ -184,6 +188,7 @@ export default function Wizard() {
           isFirstStep={safeIndex === 0}
           isLastStep={safeIndex === visibleSteps.length - 1}
           isSubmitting={isSubmitting}
+          nextDisabled={currentStep.id === 'review' && !isReviewReady}
         />
       </div>
 
