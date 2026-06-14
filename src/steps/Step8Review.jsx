@@ -159,6 +159,12 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
   const [referenceNumber, setReferenceNumber] = useState('');
   const sections = useMemo(() => summarySections(formData), [formData]);
   const missingDocuments = getMissingDocumentRequirements(formData);
+  const missingSignatures = [
+    ...(!formData.documents?.applicantSignature ? ['Provide your signature'] : []),
+    ...(isCoApplicantStepVisible(formData) && !formData.documents?.coApplicantSignature
+      ? ['Provide the co-applicant signature']
+      : []),
+  ];
 
   const {
     control,
@@ -182,7 +188,11 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
     && values.consentTerms
     && values.consentCommunications
     && (!loanSummary.exceedsAffordabilityThreshold || values.emiAffordabilityAcknowledged);
-  const isReady = Boolean(requiredConsentsComplete && missingDocuments.length === 0);
+  const isReady = Boolean(
+    requiredConsentsComplete
+    && missingDocuments.length === 0
+    && missingSignatures.length === 0,
+  );
 
   useEffect(() => {
     onReadinessChange(isReady);
@@ -190,11 +200,11 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
   }, [isReady, onReadinessChange]);
 
   const submitApplication = useCallback(() => {
-    if (missingDocuments.length > 0) return false;
+    if (missingDocuments.length > 0 || missingSignatures.length > 0) return false;
     clearDraft(formData.loanType?.loanType);
     setReferenceNumber(makeReferenceNumber());
     return true;
-  }, [formData.loanType?.loanType, missingDocuments.length]);
+  }, [formData.loanType?.loanType, missingDocuments.length, missingSignatures.length]);
 
   useImperativeHandle(ref, () => ({
     async validateAndSubmit() {
@@ -215,6 +225,7 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
     ...(loanSummary.exceedsAffordabilityThreshold && !values.emiAffordabilityAcknowledged
       ? ['Acknowledge EMI affordability warning'] : []),
     ...missingDocuments.map(({ label }) => `Upload ${label}`),
+    ...missingSignatures,
   ];
 
   return (
@@ -318,7 +329,7 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
 
       {missingItems.length > 0 && (
         <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700" role="status">
-          Complete the following to submit: {missingItems.map((item) => `✕ ${item}`).join(', ')}
+          Complete the following to submit: {missingItems.map((item) => `\u2715 ${item}`).join(', ')}
         </p>
       )}
 

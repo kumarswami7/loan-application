@@ -88,8 +88,8 @@ describe('Step8Review', () => {
 
   it('blocks high-ratio submission until affordability is acknowledged', () => {
     const formData = completeFormData({
-      loanType: { loanType: 'Personal', loanAmount: 2500000, loanTenure: 12, loanPurpose: 'Education' },
-      employment: { employmentType: 'Salaried', monthlyIncomeForEMI: 20000 },
+      loanType: { loanType: 'Personal', loanAmount: 500000, loanTenure: 12, loanPurpose: 'Education' },
+      employment: { employmentType: 'Salaried', monthlyIncomeForEMI: 10000 },
     });
     render(<Harness formData={formData} />);
     expect(screen.getByText(/exceeds our recommended 50% threshold/i)).toBeInTheDocument();
@@ -108,7 +108,18 @@ describe('Step8Review', () => {
     expect(screen.getByText(/Upload Bank Statements/)).toBeInTheDocument();
   });
 
+  it('keeps submission disabled when a required signature is missing', () => {
+    const formData = completeFormData();
+    formData.documents.applicantSignature = '';
+    render(<Harness formData={formData} />);
+    checkAllConsents();
+    expect(screen.getByRole('button', { name: 'Submit Application' })).toBeDisabled();
+    expect(screen.getByText(/Provide your signature/)).toBeInTheDocument();
+  });
+
   it('shows a terminal success modal with a UUID reference', async () => {
+    localStorage.setItem('lendswift_draft_Personal', 'encrypted');
+    localStorage.setItem('lendswift_draft_meta_Personal', '{}');
     render(<Harness />);
     checkAllConsents();
     await act(async () => {
@@ -116,5 +127,9 @@ describe('Step8Review', () => {
     });
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByText(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)).toBeInTheDocument();
+    expect(localStorage.getItem('lendswift_draft_Personal')).toBeNull();
+    expect(localStorage.getItem('lendswift_draft_meta_Personal')).toBeNull();
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 });
