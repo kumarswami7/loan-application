@@ -18,7 +18,7 @@ export function formatIndianNumber(value) {
 export function formatINR(value) {
   const num = Number(value);
   if (Number.isNaN(num)) return '';
-  return `₹${formatIndianNumber(num)}`;
+  return `\u20B9${formatIndianNumber(num)}`;
 }
 
 /**
@@ -28,7 +28,7 @@ export function formatINR(value) {
  */
 export function unformatNumber(value) {
   if (value === null || value === undefined) return '';
-  return String(value).replace(/[₹,\s]/g, '');
+  return String(value).replace(/[\u20B9,\s]/g, '');
 }
 
 /**
