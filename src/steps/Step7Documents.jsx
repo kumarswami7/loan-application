@@ -1,112 +1,156 @@
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import SignatureCanvas from 'react-signature-canvas';
+import { useForm, useWatch } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import FileUpload from '../components/common/FileUpload';
+import SignatureCanvas from '../components/common/SignatureCanvas';
 import { useFormData } from '../components/wizard/FormDataContext';
 import { isCoApplicantStepVisible } from '../components/wizard/stepRegistry';
-import { getDocumentRequirements } from '../utils/documentRequirements';
+import { buildStep7Schema, getDocumentRequirements } from '../schemas/step7Schema';
 
-function signatureValue(pad, savedValue) {
-  if (pad && !pad.isEmpty()) return pad.getTrimmedCanvas().toDataURL('image/png');
-  return savedValue || '';
+function toMetadata(entries) {
+  return entries.map((entry) => ({
+    name: entry.name || entry.file?.name || 'Uploaded file',
+    size: entry.compressedSize ?? entry.file?.size ?? 0,
+    type: entry.type || entry.file?.type || 'application/octet-stream',
+  }));
+}
+
+function restoredEntries(metadata = []) {
+  return metadata.map((entry) => ({
+    name: entry.name,
+    type: entry.type,
+    preview: '',
+    originalSize: entry.size,
+    compressedSize: entry.size,
+  }));
+}
+
+function initialFileEntries(savedDocuments, documentId) {
+  const activeEntries = savedDocuments.documentFiles?.[documentId];
+  if (activeEntries?.every((entry) => entry.file instanceof Blob)) return activeEntries;
+  return restoredEntries(savedDocuments[documentId]);
 }
 
 const Step7Documents = forwardRef(function Step7Documents(_props, ref) {
   const { formData, updateStepData } = useFormData();
-  const savedDocuments = formData.documents || {};
-  const requirements = useMemo(() => getDocumentRequirements(formData), [formData]);
-  const needsCoApplicantSignature = isCoApplicantStepVisible(formData);
-  const applicantPad = useRef(null);
-  const coApplicantPad = useRef(null);
-  const [documents, setDocuments] = useState(savedDocuments);
-  const [errors, setErrors] = useState([]);
+  const savedDocuments = useMemo(() => formData.documents || {}, [formData.documents]);
+  const documentRequirements = useMemo(() => getDocumentRequirements(formData), [formData]);
+  const schema = useMemo(() => buildStep7Schema(formData), [formData]);
+  const showCoApplicantSignature = isCoApplicantStepVisible(formData);
+  const applicantSignatureRef = useRef(null);
+  const coApplicantSignatureRef = useRef(null);
+  const [documentFiles, setDocumentFiles] = useState(() => Object.fromEntries(
+    documentRequirements.map(({ id }) => [
+      id,
+      initialFileEntries(savedDocuments, id),
+    ]),
+  ));
 
-  const handleFiles = useCallback((id, files) => {
-    const nextFiles = Array.from(files).map((file) => ({
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      lastModified: file.lastModified,
-    }));
-    setDocuments((current) => ({ ...current, [id]: nextFiles }));
-  }, []);
+  const defaultValues = useMemo(() => ({
+    ...Object.fromEntries(documentRequirements.map(({ id }) => [id, savedDocuments[id] || []])),
+    applicantSignature: savedDocuments.applicantSignature || '',
+    ...(showCoApplicantSignature
+      ? { coApplicantSignature: savedDocuments.coApplicantSignature || '' }
+      : {}),
+  }), [documentRequirements, savedDocuments, showCoApplicantSignature]);
 
-  const validateAndSave = useCallback(() => {
-    const nextDocuments = {
-      ...documents,
-      applicantSignature: signatureValue(applicantPad.current, documents.applicantSignature),
-      coApplicantSignature: needsCoApplicantSignature
-        ? signatureValue(coApplicantPad.current, documents.coApplicantSignature)
-        : '',
-    };
-    const missing = requirements
-      .filter(({ id }) => !Array.isArray(nextDocuments[id]) || nextDocuments[id].length === 0)
-      .map(({ label }) => `Upload ${label}`);
-    if (!nextDocuments.applicantSignature) missing.push('Add your signature');
-    if (needsCoApplicantSignature && !nextDocuments.coApplicantSignature) {
-      missing.push('Add the co-applicant signature');
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    setValue,
+  } = useForm({
+    resolver: zodResolver(schema),
+    mode: 'onBlur',
+    shouldFocusError: true,
+    defaultValues,
+  });
+  const values = useWatch({ control });
+
+  const updateDocuments = useCallback((documentId, entries) => {
+    setDocumentFiles((current) => ({ ...current, [documentId]: entries }));
+    setValue(documentId, toMetadata(entries), { shouldDirty: true, shouldValidate: true });
+  }, [setValue]);
+
+  const onValid = useCallback((data) => {
+    updateStepData('documents', { ...data, documentFiles });
+    if (showCoApplicantSignature) {
+      updateStepData('coApplicant', { coApplicantSignature: data.coApplicantSignature });
     }
-
-    setErrors(missing);
-    if (missing.length > 0) return false;
-    updateStepData('documents', nextDocuments);
-    return true;
-  }, [documents, needsCoApplicantSignature, requirements, updateStepData]);
+  }, [documentFiles, showCoApplicantSignature, updateStepData]);
 
   useImperativeHandle(ref, () => ({
     async validateAndSubmit() {
-      return validateAndSave();
+      let isValid = false;
+      await handleSubmit(
+        (data) => {
+          onValid(data);
+          isValid = true;
+        },
+        () => { isValid = false; },
+      )();
+      return isValid;
     },
-  }), [validateAndSave]);
+  }), [handleSubmit, onValid]);
 
   return (
-    <section className="space-y-6">
-      <h3 className="text-xl font-semibold text-primary">Document Upload &amp; E-Signature</h3>
-      <p className="text-sm text-gray-600">Upload the required documents and sign inside the boxes below.</p>
+    <form onSubmit={handleSubmit(onValid)} noValidate className="space-y-7">
+      <div>
+        <h3 className="text-xl font-semibold text-primary">Document Upload &amp; E-Signature</h3>
+        <p className="mt-1 text-sm text-gray-600">Upload clear copies of the documents listed below.</p>
+      </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        {requirements.map(({ id, label }) => (
-          <label key={id} className="block rounded-md border border-gray-200 p-4 text-sm font-medium text-gray-800">
-            {label} <span className="text-error" aria-hidden="true">*</span>
-            <input
-              type="file"
-              multiple
-              accept=".pdf,.png,.jpg,.jpeg"
-              onChange={(event) => handleFiles(id, event.target.files)}
-              className="mt-2 block w-full text-sm"
-            />
-            {documents[id]?.length > 0 && (
-              <span className="mt-2 block text-xs text-gray-500">{documents[id].length} file(s) selected</span>
-            )}
-          </label>
+      <section className="rounded-lg border border-gray-200 bg-gray-50 p-4" aria-labelledby="document-checklist-heading">
+        <h4 id="document-checklist-heading" className="font-semibold text-gray-900">Required document checklist</h4>
+        <ul className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+          {documentRequirements.filter(({ required }) => required).map(({ id, label }) => {
+            const uploaded = (values[id]?.length || 0) > 0;
+            return (
+              <li key={id} className="flex items-center gap-2">
+                <span className={uploaded ? 'text-green-700' : 'text-gray-400'} aria-hidden="true">{uploaded ? '✓' : '○'}</span>
+                <span>{label}: <strong className={uploaded ? 'text-green-700' : 'text-gray-500'}>{uploaded ? 'Uploaded' : 'Pending'}</strong></span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <div className="space-y-6">
+        {documentRequirements.map((document) => (
+          <FileUpload
+            key={document.id}
+            label={`${document.label} (${document.required ? 'Required' : 'Optional'})`}
+            required={document.required}
+            accept={document.accept}
+            maxSizeMB={document.maxSizeMB}
+            maxFiles={document.maxFiles}
+            value={documentFiles[document.id] || []}
+            onChange={(entries) => updateDocuments(document.id, entries)}
+            error={errors[document.id]?.message}
+          />
         ))}
       </div>
 
-      <div className="space-y-4">
-        <div>
-          <p className="mb-2 text-sm font-medium">Applicant Signature *</p>
-          {documents.applicantSignature ? (
-            <img src={documents.applicantSignature} alt="Saved applicant signature" className="h-28 w-full rounded border object-contain" />
-          ) : (
-            <SignatureCanvas ref={applicantPad} canvasProps={{ className: 'h-28 w-full rounded border border-gray-300' }} />
-          )}
-        </div>
-        {needsCoApplicantSignature && (
-          <div>
-            <p className="mb-2 text-sm font-medium">Co-Applicant Signature *</p>
-            {documents.coApplicantSignature ? (
-              <img src={documents.coApplicantSignature} alt="Saved co-applicant signature" className="h-28 w-full rounded border object-contain" />
-            ) : (
-              <SignatureCanvas ref={coApplicantPad} canvasProps={{ className: 'h-28 w-full rounded border border-gray-300' }} />
-            )}
-          </div>
+      <section className="space-y-6 border-t border-gray-200 pt-6" aria-labelledby="signature-heading">
+        <h4 id="signature-heading" className="text-lg font-semibold text-gray-900">E-Signatures</h4>
+        <SignatureCanvas
+          ref={applicantSignatureRef}
+          label="Applicant Signature"
+          required
+          error={errors.applicantSignature?.message}
+          onChange={(signature) => setValue('applicantSignature', signature, { shouldDirty: true, shouldValidate: true })}
+        />
+        {showCoApplicantSignature && (
+          <SignatureCanvas
+            ref={coApplicantSignatureRef}
+            label="Co-Applicant Signature"
+            required
+            error={errors.coApplicantSignature?.message}
+            onChange={(signature) => setValue('coApplicantSignature', signature, { shouldDirty: true, shouldValidate: true })}
+          />
         )}
-      </div>
-
-      {errors.length > 0 && (
-        <div role="alert" className="rounded-md bg-red-50 p-3 text-sm text-error">
-          Complete the following: {errors.join(', ')}
-        </div>
-      )}
-    </section>
+      </section>
+    </form>
   );
 });
 
