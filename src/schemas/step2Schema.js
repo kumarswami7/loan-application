@@ -20,7 +20,7 @@ export function calculateAge(dobString) {
 export function getMaxTenureMonths(dobString) {
   const age = calculateAge(dobString);
   if (Number.isNaN(age)) return undefined;
-  return Math.max(0, (60 - age) * 12);
+  return Math.max(0, (65 - age) * 12);
 }
 
 const requiredName = (label) => z
