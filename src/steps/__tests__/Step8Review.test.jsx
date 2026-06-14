@@ -18,9 +18,11 @@ function completeFormData(overrides = {}) {
     employment: { employmentType: 'Salaried', companyName: 'Infosys', designation: 'Engineer', monthlyIncomeForEMI: 75000 },
     coApplicant: {},
     documents: {
-      identityProof: [{ name: 'pan.pdf' }],
-      addressProof: [{ name: 'address.pdf' }],
+      panCard: [],
+      aadhaarFront: [{ name: 'aadhaar-front.pdf' }],
+      aadhaarBack: [{ name: 'aadhaar-back.pdf' }],
       bankStatements: [{ name: 'bank.pdf' }],
+      photograph: [{ name: 'photo.jpg' }],
       salarySlips: [{ name: 'salary.pdf' }],
       applicantSignature: signature,
     },
