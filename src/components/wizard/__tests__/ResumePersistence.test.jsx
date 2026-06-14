@@ -94,5 +94,6 @@ describe('resume draft experience', () => {
       expect(localStorage.getItem('lendswift_draft_unknown')).toBeTruthy();
     });
     expect(screen.getByRole('status')).toHaveTextContent(/^Draft saved at/);
+    expect(screen.getByText('×', { selector: '[aria-hidden="true"]' })).toBeInTheDocument();
   });
 });

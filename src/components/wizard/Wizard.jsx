@@ -202,7 +202,7 @@ export default function Wizard() {
         <div role="status" className="fixed bottom-4 right-4 flex items-center gap-3 rounded bg-accent px-4 py-2 text-white shadow-lg">
           <span>{toastMessage}</span>
           <button type="button" onClick={dismissToast} aria-label="Dismiss draft saved notification" className="font-bold">
-            ×
+            <span aria-hidden="true">&times;</span>
           </button>
         </div>
       )}
