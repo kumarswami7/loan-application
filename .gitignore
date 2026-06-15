@@ -1,4 +1,8 @@
 node_modules
 dist
+.cypress-cache
+cypress/screenshots
+cypress/videos
+cypress-vite.*.log
 .env
 *.local
