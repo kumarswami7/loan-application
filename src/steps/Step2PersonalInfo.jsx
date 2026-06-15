@@ -68,6 +68,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
         error={errors.fullName?.message}
         required
         data-testid="personalInfo-fullName"
+        errorTestId="fullName-error"
         {...register('fullName')}
       />
 
@@ -79,6 +80,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
           error={errors.dateOfBirth?.message}
           required
           data-testid="personalInfo-dateOfBirth"
+          errorTestId="dateOfBirth-error"
           {...register('dateOfBirth')}
         />
 
@@ -157,6 +159,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
           maxLength={10}
           error={errors.alternateMobile?.message}
           data-testid="personalInfo-alternateMobile"
+          errorTestId="alternateMobile-error"
           {...register('alternateMobile')}
         />
       </div>

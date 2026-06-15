@@ -11,7 +11,7 @@ import ErrorMessage from './ErrorMessage';
  * from the stored value).
  */
 const Select = forwardRef(function Select(
-  { label, error, helpText, required, options, placeholder, className, ...rest },
+  { label, error, helpText, required, options, placeholder, className, errorTestId, ...rest },
   ref,
 ) {
   const generatedId = useId();
@@ -72,7 +72,7 @@ const Select = forwardRef(function Select(
         </p>
       )}
 
-      <ErrorMessage id={errorId} message={error} />
+      <ErrorMessage id={errorId} message={error} testId={errorTestId} />
     </div>
   );
 });
@@ -84,6 +84,7 @@ Select.propTypes = {
   required: PropTypes.bool,
   placeholder: PropTypes.string,
   className: PropTypes.string,
+  errorTestId: PropTypes.string,
   options: PropTypes.arrayOf(
     PropTypes.oneOfType([
       PropTypes.string,
@@ -102,6 +103,7 @@ Select.defaultProps = {
   required: false,
   placeholder: undefined,
   className: undefined,
+  errorTestId: undefined,
 };
 
 export default Select;

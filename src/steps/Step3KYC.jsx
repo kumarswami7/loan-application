@@ -125,6 +125,7 @@ const Step3KYC = forwardRef(function Step3KYC(_props, ref) {
             verified={panVerification.isVerified}
             data-testid="kyc-panNumber"
             verificationTestId="pan-verified-badge"
+            errorTestId="panNumber-error"
             onChange={(event) => {
               const nextValue = event.target.value.toUpperCase();
               field.onChange(nextValue);
@@ -166,6 +167,7 @@ const Step3KYC = forwardRef(function Step3KYC(_props, ref) {
         error={errors.aadhaarConsent?.message}
         required
         data-testid="kyc-aadhaarConsent"
+        errorTestId="aadhaarConsent-error"
         {...register('aadhaarConsent')}
       />
 

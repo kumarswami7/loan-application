@@ -21,6 +21,7 @@ const Input = forwardRef(function Input(
     type,
     autoComplete,
     className,
+    errorTestId,
     ...rest
   },
   ref,
@@ -71,7 +72,7 @@ const Input = forwardRef(function Input(
         </p>
       )}
 
-      <ErrorMessage id={errorId} message={error} />
+      <ErrorMessage id={errorId} message={error} testId={errorTestId} />
     </div>
   );
 });
@@ -84,6 +85,7 @@ Input.propTypes = {
   type: PropTypes.string,
   autoComplete: PropTypes.string,
   className: PropTypes.string,
+  errorTestId: PropTypes.string,
 };
 
 Input.defaultProps = {
@@ -94,6 +96,7 @@ Input.defaultProps = {
   type: 'text',
   autoComplete: undefined,
   className: undefined,
+  errorTestId: undefined,
 };
 
 // --- Compound sub-components (Section C2.2) ---

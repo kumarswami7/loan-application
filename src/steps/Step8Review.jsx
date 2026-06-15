@@ -302,7 +302,7 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
       <section aria-labelledby="signatures-heading">
         <h4 id="signatures-heading" className="text-lg font-semibold">E-Signatures</h4>
         <div className="mt-3 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-md border border-gray-200 p-3">
+          <div data-testid="applicant-signature-display" className="rounded-md border border-gray-200 p-3">
             <p className="mb-2 text-sm font-medium">Your Signature</p>
             {formData.documents?.applicantSignature
               ? <img src={formData.documents.applicantSignature} alt="Your Signature" className="h-24 w-full object-contain" />

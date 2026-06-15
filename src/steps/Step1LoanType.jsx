@@ -111,6 +111,7 @@ const Step1LoanType = forwardRef(function Step1LoanType(_props, ref) {
             label="Loan Type"
             options={LOAN_TYPE_VALUES}
             testIdPrefix="loanType-loanType"
+            errorTestId="loanType-error"
             error={errors.loanType?.message}
             required
           />
@@ -127,6 +128,7 @@ const Step1LoanType = forwardRef(function Step1LoanType(_props, ref) {
             error={errors.loanAmount?.message}
             helpText={amountHelp}
             data-testid="loanType-loanAmount"
+            errorTestId="loanAmount-error"
             required
           />
         )}
@@ -141,6 +143,7 @@ const Step1LoanType = forwardRef(function Step1LoanType(_props, ref) {
           disabled={!loanType}
           required
           data-testid="loanType-loanTenure"
+          errorTestId="loanTenure-error"
           {...register('loanTenure')}
         />
 
@@ -152,6 +155,7 @@ const Step1LoanType = forwardRef(function Step1LoanType(_props, ref) {
           disabled={!loanType}
           required
           data-testid="loanType-loanPurpose"
+          errorTestId="loanPurpose-error"
           {...register('loanPurpose')}
         />
       </div>

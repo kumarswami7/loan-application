@@ -314,6 +314,7 @@ const Step5Employment = forwardRef(function Step5Employment(_props, ref) {
             options={EMPLOYMENT_TYPE_OPTIONS}
             layout="vertical"
             testIdPrefix="employment-employmentType"
+            errorTestId="employmentType-error"
             error={errors.employmentType?.message}
             required
           />

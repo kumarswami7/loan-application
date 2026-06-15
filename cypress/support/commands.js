@@ -6,6 +6,50 @@ const fillText = (testId, value) => {
   }
 };
 
+Cypress.Commands.add('drawSignature', (testId = 'signature-canvas-applicant') => {
+  cy.get(`[data-testid="${testId}"] canvas`).then(($canvas) => {
+    const rect = $canvas[0].getBoundingClientRect();
+    cy.wrap($canvas)
+      .trigger('mousedown', {
+        which: 1,
+        buttons: 1,
+        clientX: rect.left + 40,
+        clientY: rect.top + 70,
+        force: true,
+      })
+      .trigger('mousemove', {
+        which: 1,
+        buttons: 1,
+        clientX: rect.left + 120,
+        clientY: rect.top + 45,
+        force: true,
+      })
+      .trigger('mousemove', {
+        which: 1,
+        buttons: 1,
+        clientX: rect.left + 220,
+        clientY: rect.top + 90,
+        force: true,
+      });
+    cy.document().trigger('mouseup', { which: 1, force: true });
+  });
+});
+
+Cypress.Commands.add('uploadRequiredDocuments', (loanType, employmentType) => {
+  const pdfDocuments = ['aadhaarFront', 'aadhaarBack', 'bankStatements'];
+  if (employmentType === 'Salaried') pdfDocuments.push('salarySlips');
+  if (employmentType === 'Self-Employed' || employmentType === 'Business Owner') pdfDocuments.push('itrDocs');
+  if (loanType === 'Home') pdfDocuments.push('propertyDocs');
+  if (loanType === 'Business') pdfDocuments.push('businessRegistration', 'gstReturns');
+
+  pdfDocuments.forEach((documentId) => {
+    cy.get(`[data-testid="upload-${documentId}"] input[type="file"]`)
+      .selectFile('cypress/fixtures/test-doc.pdf', { force: true });
+  });
+  cy.get('[data-testid="upload-photograph"] input[type="file"]')
+    .selectFile('cypress/fixtures/test-image.jpg', { force: true });
+});
+
 Cypress.Commands.add('fillStep1', (data) => {
   cy.get(`[data-testid="loanType-loanType-${data.loanType}"]`).check();
   fillText('loanType-loanAmount', data.loanAmount);
@@ -30,10 +74,10 @@ Cypress.Commands.add('fillStep2', (data) => {
 });
 
 Cypress.Commands.add('fillStep3', (data) => {
-  fillText('kyc-panNumber', data.panNumber);
+  cy.get('[data-testid="kyc-panNumber"]').focus().clear().type(data.panNumber, { delay: 20 });
   cy.wait(2100);
   cy.get('[data-testid="pan-verified-badge"]').should('be.visible');
-  fillText('kyc-aadhaarNumber', data.aadhaarNumber);
+  cy.get('[data-testid="kyc-aadhaarNumber"]').focus().clear().type(data.aadhaarNumber, { delay: 20 });
   cy.wait(2100);
   cy.get('[data-testid="aadhaar-verified-badge"]').should('be.visible');
   cy.get('[data-testid="kyc-aadhaarConsent"]').check();
@@ -82,7 +126,7 @@ Cypress.Commands.add('fillStep5BusinessOwner', (data) => {
 Cypress.Commands.add('fillStep6', (data) => {
   fillText('coApplicant-coApplicantName', data.coApplicantName);
   cy.get('[data-testid="coApplicant-relationship"]').select(data.relationship);
-  fillText('coApplicant-coApplicantPAN', data.coApplicantPAN);
+  cy.get('[data-testid="coApplicant-coApplicantPAN"]').focus().clear().type(data.coApplicantPAN, { delay: 20 });
   cy.wait(2100);
   cy.get('[data-testid="coApplicant-pan-verified-badge"]').should('be.visible');
   fillText('coApplicant-coApplicantIncome', data.coApplicantIncome);
@@ -92,51 +136,11 @@ Cypress.Commands.add('fillStep6', (data) => {
 });
 
 Cypress.Commands.add('fillStep7', (loanType, employmentType) => {
-  const pdfDocuments = ['aadhaarFront', 'aadhaarBack', 'bankStatements'];
-  if (employmentType === 'Salaried') pdfDocuments.push('salarySlips');
-  if (employmentType === 'Self-Employed' || employmentType === 'Business Owner') pdfDocuments.push('itrDocs');
-  if (loanType === 'Home') pdfDocuments.push('propertyDocs');
-  if (loanType === 'Business') pdfDocuments.push('businessRegistration', 'gstReturns');
-
-  pdfDocuments.forEach((documentId) => {
-    cy.get(`[data-testid="upload-${documentId}"] input[type="file"]`)
-      .selectFile('cypress/fixtures/test-doc.pdf', { force: true });
-  });
-  cy.get('[data-testid="upload-photograph"] input[type="file"]')
-    .selectFile('cypress/fixtures/test-image.jpg', { force: true });
-
-  const drawSignature = (testId) => {
-    cy.get(`[data-testid="${testId}"] canvas`).then(($canvas) => {
-      const rect = $canvas[0].getBoundingClientRect();
-      cy.wrap($canvas)
-        .trigger('mousedown', {
-          which: 1,
-          buttons: 1,
-          clientX: rect.left + 40,
-          clientY: rect.top + 70,
-          force: true,
-        })
-        .trigger('mousemove', {
-          which: 1,
-          buttons: 1,
-          clientX: rect.left + 120,
-          clientY: rect.top + 45,
-          force: true,
-        })
-        .trigger('mousemove', {
-          which: 1,
-          buttons: 1,
-          clientX: rect.left + 220,
-          clientY: rect.top + 90,
-          force: true,
-        });
-      cy.document().trigger('mouseup', { which: 1, force: true });
-    });
-  };
-  drawSignature('signature-canvas-applicant');
+  cy.uploadRequiredDocuments(loanType, employmentType);
+  cy.drawSignature('signature-canvas-applicant');
   cy.get('body').then(($body) => {
     if ($body.find('[data-testid="signature-canvas-coApplicant"]').length) {
-      drawSignature('signature-canvas-coApplicant');
+      cy.drawSignature('signature-canvas-coApplicant');
     }
   });
   cy.get('[data-testid="step-documents"]').should('not.contain', 'Pending');

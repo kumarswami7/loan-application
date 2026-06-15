@@ -13,7 +13,7 @@ import { formatIndianNumber, unformatNumber } from '../../utils/numberFormat';
  * and reformats on blur for clean display.
  */
 const CurrencyInput = forwardRef(function CurrencyInput(
-  { label, error, helpText, required, onChange, onBlur, name, value, className, ...rest },
+  { label, error, helpText, required, onChange, onBlur, name, value, className, errorTestId, ...rest },
   ref,
 ) {
   const generatedId = useId();
@@ -104,7 +104,7 @@ const CurrencyInput = forwardRef(function CurrencyInput(
         </p>
       )}
 
-      <ErrorMessage id={errorId} message={error} />
+      <ErrorMessage id={errorId} message={error} testId={errorTestId} />
     </div>
   );
 });
@@ -119,6 +119,7 @@ CurrencyInput.propTypes = {
   onChange: PropTypes.func,
   onBlur: PropTypes.func,
   className: PropTypes.string,
+  errorTestId: PropTypes.string,
 };
 
 CurrencyInput.defaultProps = {
@@ -130,6 +131,7 @@ CurrencyInput.defaultProps = {
   onChange: undefined,
   onBlur: undefined,
   className: undefined,
+  errorTestId: undefined,
 };
 
 export default CurrencyInput;

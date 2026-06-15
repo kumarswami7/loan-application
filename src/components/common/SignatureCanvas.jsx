@@ -4,7 +4,7 @@ import ReactSignatureCanvas from 'react-signature-canvas';
 import ErrorMessage from './ErrorMessage';
 
 const SignatureCanvas = forwardRef(function SignatureCanvas(
-  { label, error, required, onChange, testId },
+  { label, error, required, onChange, testId, errorTestId, clearTestId },
   ref,
 ) {
   const generatedId = useId();
@@ -75,11 +75,12 @@ const SignatureCanvas = forwardRef(function SignatureCanvas(
       <button
         type="button"
         onClick={clear}
+        data-testid={clearTestId}
         className="min-h-[44px] rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
       >
         Clear
       </button>
-      <ErrorMessage id={errorId} message={error} />
+      <ErrorMessage id={errorId} message={error} testId={errorTestId} />
     </div>
   );
 });
@@ -90,6 +91,8 @@ SignatureCanvas.propTypes = {
   required: PropTypes.bool,
   onChange: PropTypes.func,
   testId: PropTypes.string,
+  errorTestId: PropTypes.string,
+  clearTestId: PropTypes.string,
 };
 
 SignatureCanvas.defaultProps = {
@@ -97,6 +100,8 @@ SignatureCanvas.defaultProps = {
   required: false,
   onChange: () => {},
   testId: undefined,
+  errorTestId: undefined,
+  clearTestId: undefined,
 };
 
 export default SignatureCanvas;

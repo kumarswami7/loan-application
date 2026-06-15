@@ -20,7 +20,7 @@ function LookupStatus({ lookup }) {
     return <p className="text-sm text-gray-500" role="status">Looking up PIN code...</p>;
   }
   if (lookup.error) {
-    return <p className="text-sm text-amber-700">{lookup.error}</p>;
+    return <p data-testid="pincode-not-found-message" className="text-sm text-amber-700">{lookup.error}</p>;
   }
   if (lookup.postOffice) {
     return <p className="text-sm text-gray-500">Post Office: {lookup.postOffice}</p>;

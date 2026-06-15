@@ -9,7 +9,7 @@ import ErrorMessage from './ErrorMessage';
  * no pre-ticked or bundled checkboxes.
  */
 const Checkbox = forwardRef(function Checkbox(
-  { label, error, required, className, ...rest },
+  { label, error, required, className, errorTestId, ...rest },
   ref,
 ) {
   const generatedId = useId();
@@ -42,7 +42,7 @@ const Checkbox = forwardRef(function Checkbox(
         </span>
       </label>
 
-      <ErrorMessage id={errorId} message={error} />
+      <ErrorMessage id={errorId} message={error} testId={errorTestId} />
     </div>
   );
 });
@@ -52,12 +52,14 @@ Checkbox.propTypes = {
   error: PropTypes.string,
   required: PropTypes.bool,
   className: PropTypes.string,
+  errorTestId: PropTypes.string,
 };
 
 Checkbox.defaultProps = {
   error: undefined,
   required: false,
   className: undefined,
+  errorTestId: undefined,
 };
 
 export default Checkbox;

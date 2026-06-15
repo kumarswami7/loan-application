@@ -35,6 +35,7 @@ const MaskedInput = forwardRef(function MaskedInput(
     value,
     className,
     verificationTestId,
+    errorTestId,
     ...rest
   },
   ref,
@@ -143,7 +144,7 @@ const MaskedInput = forwardRef(function MaskedInput(
         </p>
       )}
 
-      <ErrorMessage id={errorId} message={error} />
+      <ErrorMessage id={errorId} message={error} testId={errorTestId} />
     </div>
   );
 });
@@ -167,6 +168,7 @@ MaskedInput.propTypes = {
   value: PropTypes.string,
   className: PropTypes.string,
   verificationTestId: PropTypes.string,
+  errorTestId: PropTypes.string,
 };
 
 MaskedInput.defaultProps = {
@@ -186,6 +188,7 @@ MaskedInput.defaultProps = {
   value: '',
   className: undefined,
   verificationTestId: undefined,
+  errorTestId: undefined,
 };
 
 export default MaskedInput;

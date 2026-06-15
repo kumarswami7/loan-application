@@ -11,7 +11,7 @@ import ErrorMessage from './ErrorMessage';
  * spreads {name, onChange, onBlur, ref} onto each individual radio.
  */
 const RadioGroup = forwardRef(function RadioGroup(
-  { label, error, options, required, layout, name, onChange, onBlur, value, testIdPrefix, ...rest },
+  { label, error, options, required, layout, name, onChange, onBlur, value, testIdPrefix, errorTestId, ...rest },
   ref,
 ) {
   const generatedId = useId();
@@ -67,7 +67,7 @@ const RadioGroup = forwardRef(function RadioGroup(
         })}
       </div>
 
-      <ErrorMessage id={errorId} message={error} />
+      <ErrorMessage id={errorId} message={error} testId={errorTestId} />
     </fieldset>
   );
 });
@@ -82,6 +82,7 @@ RadioGroup.propTypes = {
   onChange: PropTypes.func,
   onBlur: PropTypes.func,
   testIdPrefix: PropTypes.string,
+  errorTestId: PropTypes.string,
   options: PropTypes.arrayOf(
     PropTypes.oneOfType([
       PropTypes.string,
@@ -102,6 +103,7 @@ RadioGroup.defaultProps = {
   onChange: undefined,
   onBlur: undefined,
   testIdPrefix: undefined,
+  errorTestId: undefined,
 };
 
 export default RadioGroup;

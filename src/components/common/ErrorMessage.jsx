@@ -5,12 +5,13 @@ import PropTypes from 'prop-types';
  * Uses aria-live="polite" + role="alert" so screen readers announce
  * errors as they appear (WCAG 3.3.1 Error Identification, Section A2.4/B4.2).
  */
-export default function ErrorMessage({ id, message }) {
+export default function ErrorMessage({ id, message, testId }) {
   if (!message) return null;
 
   return (
     <p
       id={id}
+      data-testid={testId}
       role="alert"
       aria-live="polite"
       className="mt-1 text-sm text-error flex items-start gap-1"
@@ -24,8 +25,10 @@ export default function ErrorMessage({ id, message }) {
 ErrorMessage.propTypes = {
   id: PropTypes.string.isRequired,
   message: PropTypes.string,
+  testId: PropTypes.string,
 };
 
 ErrorMessage.defaultProps = {
   message: undefined,
+  testId: undefined,
 };

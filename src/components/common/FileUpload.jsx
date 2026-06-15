@@ -20,11 +20,11 @@ function entryName(entry) {
   return entry.name || entry.file?.name || 'Uploaded file';
 }
 
-function DefaultPreview({ entry, onRemove }) {
+function DefaultPreview({ entry, onRemove, testId, index }) {
   const name = entryName(entry);
   const isImage = entry.type?.startsWith('image/') || entry.file?.type?.startsWith('image/');
   return (
-    <li className="flex items-center gap-3 rounded-md border border-gray-200 p-3">
+    <li data-testid={`preview-${testId}`} className="flex items-center gap-3 rounded-md border border-gray-200 p-3">
       {isImage && entry.preview ? (
         <img src={entry.preview} alt={`Preview of ${name}`} className="h-20 w-20 rounded object-cover" />
       ) : (
@@ -36,7 +36,7 @@ function DefaultPreview({ entry, onRemove }) {
       )}
       <div className="min-w-0 flex-1 text-sm">
         <p className="truncate font-medium text-gray-800">{name}</p>
-        <p className="text-gray-500">
+        <p data-testid={`compression-info-${testId}`} className="text-gray-500">
           {entry.originalSize !== entry.compressedSize
             ? `${formatBytes(entry.originalSize)} -> ${formatBytes(entry.compressedSize)}`
             : formatBytes(entry.compressedSize)}
@@ -46,6 +46,7 @@ function DefaultPreview({ entry, onRemove }) {
         type="button"
         onClick={onRemove}
         aria-label={`Remove ${name}`}
+        data-testid={`remove-${testId}-${index}`}
         className="min-h-[44px] min-w-[44px] rounded-md border border-gray-300 text-xl text-gray-600"
       >
         &times;
@@ -64,6 +65,8 @@ DefaultPreview.propTypes = {
     compressedSize: PropTypes.number.isRequired,
   }).isRequired,
   onRemove: PropTypes.func.isRequired,
+  testId: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
 };
 
 export default function FileUpload({
@@ -80,6 +83,7 @@ export default function FileUpload({
 }) {
   const generatedId = useId();
   const errorId = `${generatedId}-error`;
+  const previewTestId = testId?.replace('upload-', '') || generatedId;
   const [localError, setLocalError] = useState('');
   const [status, setStatus] = useState('');
   const ownedPreviews = useRef(new Set());
@@ -166,13 +170,13 @@ export default function FileUpload({
         <p className="mt-1 text-xs text-gray-500">{acceptedLabels.join(', ')} up to {maxSizeMB}MB</p>
       </div>
       <span className="sr-only" aria-live="polite">{status}</span>
-      <ErrorMessage id={errorId} message={displayedError} />
+      <ErrorMessage id={errorId} message={displayedError} testId={testId ? `${testId}-error` : undefined} />
       {value.length > 0 && (
         <ul className="space-y-2">
           {value.map((entry, index) => (
             renderPreview
               ? <li key={`${entryName(entry)}-${index}`}>{renderPreview(entry, () => removeEntry(index))}</li>
-              : <DefaultPreview key={`${entryName(entry)}-${index}`} entry={entry} onRemove={() => removeEntry(index)} />
+              : <DefaultPreview key={`${entryName(entry)}-${index}`} entry={entry} onRemove={() => removeEntry(index)} testId={previewTestId} index={index} />
           ))}
         </ul>
       )}

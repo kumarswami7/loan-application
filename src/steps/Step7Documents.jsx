@@ -111,7 +111,7 @@ const Step7Documents = forwardRef(function Step7Documents(_props, ref) {
           {documentRequirements.filter(({ required }) => required).map(({ id, label }) => {
             const uploaded = (values[id]?.length || 0) > 0;
             return (
-              <li key={id} className="flex items-center gap-2">
+              <li key={id} data-testid={`checklist-${id}`} className="flex items-center gap-2">
                 <span className={uploaded ? 'text-green-700' : 'text-gray-400'} aria-hidden="true">{uploaded ? '✓' : '○'}</span>
                 <span>{label}: <strong className={uploaded ? 'text-green-700' : 'text-gray-500'}>{uploaded ? 'Uploaded' : 'Pending'}</strong></span>
               </li>
@@ -145,6 +145,8 @@ const Step7Documents = forwardRef(function Step7Documents(_props, ref) {
           required
           error={errors.applicantSignature?.message}
           testId="signature-canvas-applicant"
+          errorTestId="applicantSignature-error"
+          clearTestId="signature-clear-applicant"
           onChange={(signature) => setValue('applicantSignature', signature, { shouldDirty: true, shouldValidate: true })}
         />
         {showCoApplicantSignature && (
@@ -154,6 +156,8 @@ const Step7Documents = forwardRef(function Step7Documents(_props, ref) {
             required
             error={errors.coApplicantSignature?.message}
             testId="signature-canvas-coApplicant"
+            errorTestId="coApplicantSignature-error"
+            clearTestId="signature-clear-coApplicant"
             onChange={(signature) => setValue('coApplicantSignature', signature, { shouldDirty: true, shouldValidate: true })}
           />
         )}
