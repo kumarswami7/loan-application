@@ -34,6 +34,7 @@ const MaskedInput = forwardRef(function MaskedInput(
     type,
     value,
     className,
+    verificationTestId,
     ...rest
   },
   ref,
@@ -118,6 +119,7 @@ const MaskedInput = forwardRef(function MaskedInput(
             <span
               className="text-accent text-sm font-medium flex items-center gap-1"
               role="status"
+              data-testid={verificationTestId}
             >
               <span aria-hidden="true">✓</span> Verified
             </span>
@@ -164,6 +166,7 @@ MaskedInput.propTypes = {
   type: PropTypes.string,
   value: PropTypes.string,
   className: PropTypes.string,
+  verificationTestId: PropTypes.string,
 };
 
 MaskedInput.defaultProps = {
@@ -182,6 +185,7 @@ MaskedInput.defaultProps = {
   type: 'text',
   value: '',
   className: undefined,
+  verificationTestId: undefined,
 };
 
 export default MaskedInput;

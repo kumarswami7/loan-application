@@ -123,6 +123,8 @@ const Step3KYC = forwardRef(function Step3KYC(_props, ref) {
             error={panError}
             isVerifying={panVerification.isVerifying}
             verified={panVerification.isVerified}
+            data-testid="kyc-panNumber"
+            verificationTestId="pan-verified-badge"
             onChange={(event) => {
               const nextValue = event.target.value.toUpperCase();
               field.onChange(nextValue);
@@ -149,6 +151,8 @@ const Step3KYC = forwardRef(function Step3KYC(_props, ref) {
             error={aadhaarError}
             isVerifying={aadhaarVerification.isVerifying}
             verified={aadhaarVerification.isVerified}
+            data-testid="kyc-aadhaarNumber"
+            verificationTestId="aadhaar-verified-badge"
             onChange={(event) => {
               field.onChange(event.target.value.replace(/\D/g, '').slice(0, 12));
             }}
@@ -161,6 +165,7 @@ const Step3KYC = forwardRef(function Step3KYC(_props, ref) {
         label={CONSENT_TEXT}
         error={errors.aadhaarConsent?.message}
         required
+        data-testid="kyc-aadhaarConsent"
         {...register('aadhaarConsent')}
       />
 
@@ -169,6 +174,7 @@ const Step3KYC = forwardRef(function Step3KYC(_props, ref) {
         maxLength={10}
         autoComplete="off"
         error={errors.voterID?.message}
+        data-testid="kyc-voterID"
         {...register('voterID', {
           onChange: (event) => {
             event.target.value = event.target.value.toUpperCase();
@@ -182,6 +188,7 @@ const Step3KYC = forwardRef(function Step3KYC(_props, ref) {
           maxLength={8}
           autoComplete="off"
           error={errors.passport?.message}
+          data-testid="kyc-passport"
           {...register('passport', {
             onChange: (event) => {
               event.target.value = event.target.value.toUpperCase();

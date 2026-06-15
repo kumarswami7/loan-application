@@ -4,7 +4,7 @@ import ReactSignatureCanvas from 'react-signature-canvas';
 import ErrorMessage from './ErrorMessage';
 
 const SignatureCanvas = forwardRef(function SignatureCanvas(
-  { label, error, required, onChange },
+  { label, error, required, onChange, testId },
   ref,
 ) {
   const generatedId = useId();
@@ -47,6 +47,7 @@ const SignatureCanvas = forwardRef(function SignatureCanvas(
         aria-label="Signature pad - draw your signature using mouse or touch"
         aria-describedby={error ? errorId : undefined}
         aria-invalid={Boolean(error)}
+        data-testid={testId}
         onFocus={() => setObscured(false)}
         onBlur={() => setObscured(true)}
         className={`relative min-h-[150px] w-full overflow-hidden rounded-md border bg-white ${error ? 'border-error' : 'border-gray-300'}`}
@@ -54,7 +55,10 @@ const SignatureCanvas = forwardRef(function SignatureCanvas(
         <ReactSignatureCanvas
           ref={padRef}
           onEnd={publishSignature}
-          canvasProps={{ className: 'block h-[150px] w-full touch-none' }}
+          canvasProps={{
+            className: 'block h-[150px] w-full touch-none',
+            'aria-label': `${label} canvas`,
+          }}
         />
         {/* Basic screenshot deterrent required by the project spec; this is not DRM. */}
         {obscured && (
@@ -85,12 +89,14 @@ SignatureCanvas.propTypes = {
   error: PropTypes.string,
   required: PropTypes.bool,
   onChange: PropTypes.func,
+  testId: PropTypes.string,
 };
 
 SignatureCanvas.defaultProps = {
   error: undefined,
   required: false,
   onChange: () => {},
+  testId: undefined,
 };
 
 export default SignatureCanvas;

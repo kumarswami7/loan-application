@@ -132,6 +132,7 @@ const Step7Documents = forwardRef(function Step7Documents(_props, ref) {
             value={documentFiles[document.id] || []}
             onChange={(entries) => updateDocuments(document.id, entries)}
             error={errors[document.id]?.message}
+            testId={`upload-${document.id}`}
           />
         ))}
       </div>
@@ -143,6 +144,7 @@ const Step7Documents = forwardRef(function Step7Documents(_props, ref) {
           label="Applicant Signature"
           required
           error={errors.applicantSignature?.message}
+          testId="signature-canvas-applicant"
           onChange={(signature) => setValue('applicantSignature', signature, { shouldDirty: true, shouldValidate: true })}
         />
         {showCoApplicantSignature && (
@@ -151,6 +153,7 @@ const Step7Documents = forwardRef(function Step7Documents(_props, ref) {
             label="Co-Applicant Signature"
             required
             error={errors.coApplicantSignature?.message}
+            testId="signature-canvas-coApplicant"
             onChange={(signature) => setValue('coApplicantSignature', signature, { shouldDirty: true, shouldValidate: true })}
           />
         )}

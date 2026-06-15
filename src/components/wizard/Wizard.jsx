@@ -214,12 +214,14 @@ export default function Wizard() {
           <h2 id="step-heading" tabIndex={-1} className="sr-only">
             {currentStep.label}
           </h2>
-          <StepComponent
-            ref={stepRef}
-            stepId={currentStep.id}
-            stepLabel={currentStep.label}
-            onReadinessChange={setIsReviewReady}
-          />
+          <div data-testid={`step-${currentStep.id}`}>
+            <StepComponent
+              ref={stepRef}
+              stepId={currentStep.id}
+              stepLabel={currentStep.label}
+              onReadinessChange={setIsReviewReady}
+            />
+          </div>
         </main>
 
         <StepNavigation

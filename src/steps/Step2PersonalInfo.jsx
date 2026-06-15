@@ -67,6 +67,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
         autoComplete="name"
         error={errors.fullName?.message}
         required
+        data-testid="personalInfo-fullName"
         {...register('fullName')}
       />
 
@@ -77,6 +78,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
           autoComplete="bday"
           error={errors.dateOfBirth?.message}
           required
+          data-testid="personalInfo-dateOfBirth"
           {...register('dateOfBirth')}
         />
 
@@ -86,6 +88,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
           placeholder="Select marital status"
           error={errors.maritalStatus?.message}
           required
+          data-testid="personalInfo-maritalStatus"
           {...register('maritalStatus')}
         />
       </div>
@@ -98,6 +101,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
             {...field}
             label="Gender"
             options={GENDER_OPTIONS}
+            testIdPrefix="personalInfo-gender"
             error={errors.gender?.message}
             required
           />
@@ -109,6 +113,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
           label="Father's Name"
           error={errors.fatherName?.message}
           required
+          data-testid="personalInfo-fatherName"
           {...register('fatherName')}
         />
 
@@ -116,6 +121,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
           label="Mother's Name"
           error={errors.motherName?.message}
           required
+          data-testid="personalInfo-motherName"
           {...register('motherName')}
         />
       </div>
@@ -126,6 +132,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
         autoComplete="email"
         error={errors.email?.message}
         required
+        data-testid="personalInfo-email"
         {...register('email')}
       />
 
@@ -138,6 +145,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
           maxLength={10}
           error={errors.mobileNumber?.message}
           required
+          data-testid="personalInfo-mobileNumber"
           {...register('mobileNumber')}
         />
 
@@ -148,6 +156,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
           autoComplete="tel"
           maxLength={10}
           error={errors.alternateMobile?.message}
+          data-testid="personalInfo-alternateMobile"
           {...register('alternateMobile')}
         />
       </div>

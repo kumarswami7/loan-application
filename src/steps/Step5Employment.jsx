@@ -88,6 +88,7 @@ function OfficeAddressFields({ control, errors, setValue }) {
             label="Office Address Line 1"
             error={errors.officeAddress?.addressLine1?.message}
             required
+            data-testid="employment-officeAddress-addressLine1"
           />
         )}
       />
@@ -104,6 +105,7 @@ function OfficeAddressFields({ control, errors, setValue }) {
               error={errors.officeAddress?.pincode?.message}
               onChange={(event) => field.onChange(event.target.value.replace(/\D/g, '').slice(0, 6))}
               required
+              data-testid="employment-officeAddress-pincode"
             />
             {lookup.isLoading && <p role="status" className="text-sm text-gray-500">Looking up PIN code...</p>}
             {lookup.error && <p className="text-sm text-amber-700">{lookup.error}</p>}
@@ -116,14 +118,14 @@ function OfficeAddressFields({ control, errors, setValue }) {
           name="officeAddress.city"
           control={control}
           render={({ field }) => (
-            <Input {...field} label="Office City" error={errors.officeAddress?.city?.message} required />
+            <Input {...field} label="Office City" error={errors.officeAddress?.city?.message} data-testid="employment-officeAddress-city" required />
           )}
         />
         <Controller
           name="officeAddress.state"
           control={control}
           render={({ field }) => (
-            <Input {...field} label="Office State" error={errors.officeAddress?.state?.message} required />
+            <Input {...field} label="Office State" error={errors.officeAddress?.state?.message} data-testid="employment-officeAddress-state" required />
           )}
         />
       </div>
@@ -140,20 +142,21 @@ function BusinessFields({ control, errors, register, setValue, showMonthlyIncome
 
   return (
     <div className="space-y-5">
-      <Input label="Business Name" error={errors.businessName?.message} required {...register('businessName')} />
+      <Input label="Business Name" error={errors.businessName?.message} data-testid="employment-businessName" required {...register('businessName')} />
       <Select
         label="Business Type"
         options={BUSINESS_TYPE_OPTIONS}
         placeholder="Select business type"
         error={errors.businessType?.message}
         required
+        data-testid="employment-businessType"
         {...register('businessType')}
       />
       <Controller
         name="annualTurnover"
         control={control}
         render={({ field }) => (
-          <CurrencyInput {...field} label="Annual Turnover" error={errors.annualTurnover?.message} required />
+          <CurrencyInput {...field} label="Annual Turnover" error={errors.annualTurnover?.message} data-testid="employment-annualTurnover" required />
         )}
       />
       <Input
@@ -163,6 +166,7 @@ function BusinessFields({ control, errors, register, setValue, showMonthlyIncome
         max="50"
         error={errors.yearsInBusiness?.message}
         required
+        data-testid="employment-yearsInBusiness"
         {...register('yearsInBusiness')}
       />
       {showMonthlyIncome && (
@@ -170,7 +174,7 @@ function BusinessFields({ control, errors, register, setValue, showMonthlyIncome
           name="monthlyIncome"
           control={control}
           render={({ field }) => (
-            <CurrencyInput {...field} label="Monthly Income" error={errors.monthlyIncome?.message} required />
+            <CurrencyInput {...field} label="Monthly Income" error={errors.monthlyIncome?.message} data-testid="employment-monthlyIncome" required />
           )}
         />
       )}
@@ -188,6 +192,7 @@ function BusinessFields({ control, errors, register, setValue, showMonthlyIncome
               error={errors.gstNumber?.message}
               onChange={(event) => field.onChange(event.target.value.toUpperCase())}
               required
+              data-testid="employment-gstNumber"
             />
           )}
         />
@@ -200,6 +205,7 @@ function BusinessFields({ control, errors, register, setValue, showMonthlyIncome
         max="50"
         error={errors.yearsOfExperience?.message}
         required
+        data-testid="employment-yearsOfExperience"
         {...register('yearsOfExperience')}
       />
     </div>
@@ -307,6 +313,7 @@ const Step5Employment = forwardRef(function Step5Employment(_props, ref) {
             label="Employment Type"
             options={EMPLOYMENT_TYPE_OPTIONS}
             layout="vertical"
+            testIdPrefix="employment-employmentType"
             error={errors.employmentType?.message}
             required
           />
@@ -321,17 +328,18 @@ const Step5Employment = forwardRef(function Step5Employment(_props, ref) {
             autoComplete="organization"
             error={errors.companyName?.message}
             required
+            data-testid="employment-companyName"
             {...register('companyName')}
           />
           <datalist id="company-options">
             {COMPANY_OPTIONS.map((company) => <option key={company} value={company} />)}
           </datalist>
-          <Input label="Designation" error={errors.designation?.message} required {...register('designation')} />
+          <Input label="Designation" error={errors.designation?.message} data-testid="employment-designation" required {...register('designation')} />
           <Controller
             name="monthlyNetSalary"
             control={control}
             render={({ field }) => (
-              <CurrencyInput {...field} label="Monthly Net Salary" error={errors.monthlyNetSalary?.message} required />
+              <CurrencyInput {...field} label="Monthly Net Salary" error={errors.monthlyNetSalary?.message} data-testid="employment-monthlyNetSalary" required />
             )}
           />
           <Input
@@ -341,6 +349,7 @@ const Step5Employment = forwardRef(function Step5Employment(_props, ref) {
             max="50"
             error={errors.yearsOfExperience?.message}
             required
+            data-testid="employment-yearsOfExperience"
             {...register('yearsOfExperience')}
           />
         </section>

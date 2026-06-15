@@ -159,12 +159,14 @@ const Step4Address = forwardRef(function Step4Address(_props, ref) {
           autoComplete="address-line1"
           error={errors.currentAddressLine1?.message}
           required
+          data-testid="address-currentAddressLine1"
           {...register('currentAddressLine1')}
         />
         <Input
           label="Current Address Line 2"
           autoComplete="address-line2"
           error={errors.currentAddressLine2?.message}
+          data-testid="address-currentAddressLine2"
           {...register('currentAddressLine2')}
         />
         <Controller
@@ -181,6 +183,7 @@ const Step4Address = forwardRef(function Step4Address(_props, ref) {
                 error={errors.currentPincode?.message}
                 onChange={numericPinChange(field, true)}
                 required
+                data-testid="address-currentPincode"
               />
               <LookupStatus lookup={currentLookup} />
             </div>
@@ -192,6 +195,7 @@ const Step4Address = forwardRef(function Step4Address(_props, ref) {
             autoComplete="address-level2"
             error={errors.currentCity?.message}
             required
+            data-testid="address-currentCity"
             {...register('currentCity')}
           />
           <Controller
@@ -208,6 +212,7 @@ const Step4Address = forwardRef(function Step4Address(_props, ref) {
                   setCurrentStateBlurred(true);
                 }}
                 required
+                data-testid="address-currentState"
               />
             )}
           />
@@ -229,6 +234,7 @@ const Step4Address = forwardRef(function Step4Address(_props, ref) {
           placeholder="Select residence type"
           error={errors.residenceType?.message}
           required
+          data-testid="address-residenceType"
           {...register('residenceType')}
         />
         <div className="min-h-0">
@@ -242,6 +248,7 @@ const Step4Address = forwardRef(function Step4Address(_props, ref) {
                   label="Monthly Rent Amount"
                   error={errors.rentAmount?.message}
                   required
+                  data-testid="address-rentAmount"
                 />
               )}
             />
@@ -255,6 +262,7 @@ const Step4Address = forwardRef(function Step4Address(_props, ref) {
           step="0.1"
           error={errors.yearsAtCurrentAddress?.message}
           required
+          data-testid="address-yearsAtCurrentAddress"
           {...register('yearsAtCurrentAddress')}
         />
       </section>
@@ -298,6 +306,7 @@ const Step4Address = forwardRef(function Step4Address(_props, ref) {
       <Checkbox
         label="My permanent address is the same as my current address"
         error={errors.sameAsPermanentAddress?.message}
+        data-testid="address-sameAsPermanentAddress"
         {...register('sameAsPermanentAddress')}
       />
 

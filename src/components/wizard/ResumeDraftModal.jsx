@@ -29,6 +29,7 @@ export default function ResumeDraftModal({ loanType, onResume, onStartFresh }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div
+        data-testid="resume-draft-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="resume-draft-heading"

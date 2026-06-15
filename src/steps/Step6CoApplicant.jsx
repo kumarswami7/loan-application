@@ -100,6 +100,7 @@ const Step6CoApplicant = forwardRef(function Step6CoApplicant(_props, ref) {
         autoComplete="name"
         error={errors.coApplicantName?.message}
         required
+        data-testid="coApplicant-coApplicantName"
         {...register('coApplicantName')}
       />
 
@@ -109,6 +110,7 @@ const Step6CoApplicant = forwardRef(function Step6CoApplicant(_props, ref) {
         placeholder="Select relationship"
         error={errors.relationship?.message}
         required
+        data-testid="coApplicant-relationship"
         {...register('relationship')}
       />
 
@@ -125,6 +127,8 @@ const Step6CoApplicant = forwardRef(function Step6CoApplicant(_props, ref) {
             error={panError}
             isVerifying={panVerification.isVerifying}
             verified={panVerification.isVerified}
+            data-testid="coApplicant-coApplicantPAN"
+            verificationTestId="coApplicant-pan-verified-badge"
             onChange={(event) => field.onChange(event.target.value.toUpperCase())}
             required
           />
@@ -140,6 +144,7 @@ const Step6CoApplicant = forwardRef(function Step6CoApplicant(_props, ref) {
             label="Co-Applicant Monthly Income"
             error={errors.coApplicantIncome?.message}
             required
+            data-testid="coApplicant-coApplicantIncome"
           />
         )}
       />
@@ -153,6 +158,7 @@ const Step6CoApplicant = forwardRef(function Step6CoApplicant(_props, ref) {
         label={CONSENT_TEXT}
         error={errors.coApplicantConsent?.message}
         required
+        data-testid="coApplicant-coApplicantConsent"
         {...register('coApplicantConsent')}
       />
     </form>

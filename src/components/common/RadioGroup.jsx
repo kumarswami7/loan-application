@@ -11,7 +11,7 @@ import ErrorMessage from './ErrorMessage';
  * spreads {name, onChange, onBlur, ref} onto each individual radio.
  */
 const RadioGroup = forwardRef(function RadioGroup(
-  { label, error, options, required, layout, name, onChange, onBlur, value, ...rest },
+  { label, error, options, required, layout, name, onChange, onBlur, value, testIdPrefix, ...rest },
   ref,
 ) {
   const generatedId = useId();
@@ -59,6 +59,7 @@ const RadioGroup = forwardRef(function RadioGroup(
                 onBlur={onBlur}
                 className="w-5 h-5 accent-primary focus-visible:outline-2 focus-visible:outline-primary"
                 {...rest}
+                data-testid={testIdPrefix ? `${testIdPrefix}-${optValue}` : rest['data-testid']}
               />
               <span className="text-sm text-gray-800">{optLabel}</span>
             </label>
@@ -80,6 +81,7 @@ RadioGroup.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func,
   onBlur: PropTypes.func,
+  testIdPrefix: PropTypes.string,
   options: PropTypes.arrayOf(
     PropTypes.oneOfType([
       PropTypes.string,
@@ -99,6 +101,7 @@ RadioGroup.defaultProps = {
   value: undefined,
   onChange: undefined,
   onBlur: undefined,
+  testIdPrefix: undefined,
 };
 
 export default RadioGroup;

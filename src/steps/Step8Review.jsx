@@ -117,6 +117,7 @@ function SuccessModal({ referenceNumber }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="presentation">
       <div
         role="dialog"
+        data-testid="success-modal"
         aria-modal="true"
         aria-labelledby="submission-success-title"
         className="w-full max-w-lg rounded-lg bg-white p-6 text-center shadow-xl"
@@ -125,7 +126,7 @@ function SuccessModal({ referenceNumber }) {
           Application Submitted Successfully!
         </h2>
         <p className="mt-4 text-sm text-gray-600">Your application reference number is</p>
-        <p className="mt-2 select-all break-all font-mono text-xl font-semibold text-gray-900">
+        <p data-testid="reference-number" className="mt-2 select-all break-all font-mono text-xl font-semibold text-gray-900">
           {referenceNumber}
         </p>
         <p className="mt-5 text-sm text-gray-700">
@@ -245,6 +246,7 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
                 <h5 className="font-semibold text-primary">{registryEntry?.label}</h5>
                 <button
                   type="button"
+                  data-testid={`edit-step-${section.id}`}
                   onClick={() => goToStep(section.id)}
                   className="min-h-[44px] rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary"
                 >
@@ -264,7 +266,7 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
         })}
       </section>
 
-      <section className="rounded-lg border border-primary bg-primary/5 p-6" aria-labelledby="kfs-heading">
+      <section data-testid="pre-approval-summary" className="rounded-lg border border-primary bg-primary/5 p-6" aria-labelledby="kfs-heading">
         <h4 id="kfs-heading" className="text-lg font-bold text-primary">Pre-Approval Summary (Key Fact Statement)</h4>
         <dl className="mt-4 grid gap-4 sm:grid-cols-2">
           <div><dt className="text-sm text-gray-600">Loan Amount</dt><dd className="text-lg font-semibold">{formatINR(formData.loanType?.loanAmount)}</dd></div>
@@ -284,6 +286,7 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
               <Checkbox
                 label="I understand the EMI-to-income ratio exceeds 50% and wish to proceed"
                 error={errors.emiAffordabilityAcknowledged?.message}
+                data-testid="review-emiAffordabilityAcknowledged"
                 {...register('emiAffordabilityAcknowledged')}
               />
             </div>
@@ -309,7 +312,7 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
             <div className="rounded-md border border-gray-200 p-3">
               <p className="mb-2 text-sm font-medium">Co-Applicant Signature</p>
               {formData.documents?.coApplicantSignature
-                ? <img src={formData.documents.coApplicantSignature} alt="Co-Applicant Signature" className="h-24 w-full object-contain" />
+                ? <img data-testid="coApplicant-signature-display" src={formData.documents.coApplicantSignature} alt="Co-Applicant Signature" className="h-24 w-full object-contain" />
                 : <p className="text-sm text-error">Signature missing</p>}
             </div>
           )}
@@ -318,16 +321,17 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
 
       <section className="space-y-2" aria-labelledby="consent-heading">
         <h4 id="consent-heading" className="text-lg font-semibold">Consent &amp; Authorisation</h4>
-        <Checkbox label="I confirm that all information and documents provided in this application are true, complete and accurate." error={errors.consentAccuracy?.message} required {...register('consentAccuracy')} />
-        <Checkbox label="I authorise LendSwift and its lending partners to obtain and verify my credit score and credit history." error={errors.consentCreditCheck?.message} required {...register('consentCreditCheck')} />
+        <Checkbox label="I confirm that all information and documents provided in this application are true, complete and accurate." error={errors.consentAccuracy?.message} data-testid="review-consentAccuracy" required {...register('consentAccuracy')} />
+        <Checkbox label="I authorise LendSwift and its lending partners to obtain and verify my credit score and credit history." error={errors.consentCreditCheck?.message} data-testid="review-consentCreditCheck" required {...register('consentCreditCheck')} />
         <Checkbox
           label={<span>I have read and agree to the <a href="#" target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()} className="text-primary underline">Terms and Conditions</a>.</span>}
           error={errors.consentTerms?.message}
           required
+          data-testid="review-consentTerms"
           {...register('consentTerms')}
         />
         {/* TODO: Replace the placeholder link above with the published Terms and Conditions PDF. */}
-        <Checkbox label="I consent to receive communications regarding this application by phone, SMS, email and WhatsApp." error={errors.consentCommunications?.message} required {...register('consentCommunications')} />
+        <Checkbox label="I consent to receive communications regarding this application by phone, SMS, email and WhatsApp." error={errors.consentCommunications?.message} data-testid="review-consentCommunications" required {...register('consentCommunications')} />
       </section>
 
       {missingItems.length > 0 && (

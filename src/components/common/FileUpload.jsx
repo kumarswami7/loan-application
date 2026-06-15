@@ -76,6 +76,7 @@ export default function FileUpload({
   value,
   onChange,
   renderPreview,
+  testId,
 }) {
   const generatedId = useId();
   const errorId = `${generatedId}-error`;
@@ -157,6 +158,7 @@ export default function FileUpload({
       </p>
       <div
         {...getRootProps()}
+        data-testid={testId}
         className={`cursor-pointer rounded-md border-2 border-dashed p-5 text-center ${displayedError ? 'border-error bg-error-light' : 'border-gray-300 hover:border-primary'} ${isDragActive ? 'bg-primary/5' : ''}`}
       >
         <input {...getInputProps({ 'aria-describedby': displayedError ? errorId : undefined })} />
@@ -195,6 +197,7 @@ FileUpload.propTypes = {
   })),
   onChange: PropTypes.func.isRequired,
   renderPreview: PropTypes.func,
+  testId: PropTypes.string,
 };
 
 FileUpload.defaultProps = {
@@ -203,4 +206,5 @@ FileUpload.defaultProps = {
   maxFiles: 1,
   value: [],
   renderPreview: undefined,
+  testId: undefined,
 };

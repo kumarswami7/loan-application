@@ -16,6 +16,7 @@ export default function StepNavigation({
   return (
     <div className="flex flex-col sm:flex-row justify-between gap-3 mt-8 pt-6 border-t border-gray-200">
       <button
+        data-testid="wizard-prev"
         type="button"
         onClick={onPrevious}
         disabled={isFirstStep}
@@ -27,6 +28,7 @@ export default function StepNavigation({
       </button>
 
       <button
+        data-testid="wizard-save-draft"
         type="button"
         onClick={onSaveDraft}
         className="min-h-[44px] px-6 py-2 rounded-md border border-primary text-primary
@@ -36,6 +38,7 @@ export default function StepNavigation({
       </button>
 
       <button
+        data-testid={isLastStep ? 'submit-button' : 'wizard-next'}
         type="button"
         onClick={onNext}
         disabled={nextDisabled || isSubmitting}
