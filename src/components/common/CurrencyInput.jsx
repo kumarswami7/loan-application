@@ -92,7 +92,7 @@ const CurrencyInput = forwardRef(function CurrencyInput(
           className={`w-full min-h-[44px] pl-7 pr-3 py-2 rounded-md border text-base
             focus-visible:outline-2 focus-visible:outline-primary
             disabled:bg-gray-100 disabled:cursor-not-allowed
-            ${error ? 'border-error bg-error-light' : 'border-gray-300 bg-white'}
+            ${error ? 'border-error bg-error-light' : 'border-gray-500 bg-white'}
             ${className || ''}`}
           {...rest}
         />

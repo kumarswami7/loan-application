@@ -20,7 +20,7 @@ export default function StepNavigation({
         type="button"
         onClick={onPrevious}
         disabled={isFirstStep}
-        className="min-h-[44px] px-6 py-2 rounded-md border border-gray-300 text-gray-700
+        className="min-h-[44px] px-6 py-2 rounded-md border border-gray-500 text-gray-700
                    font-medium hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed
                    focus-visible:outline-primary order-3 sm:order-1"
       >

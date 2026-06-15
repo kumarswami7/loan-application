@@ -12,15 +12,25 @@ const SignatureCanvas = forwardRef(function SignatureCanvas(
   const padRef = useRef(null);
   const containerRef = useRef(null);
   const [obscured, setObscured] = useState(false);
+  const [typedSignature, setTypedSignature] = useState('');
 
   const publishSignature = () => {
     if (!padRef.current || padRef.current.isEmpty()) return;
+    setTypedSignature('');
     onChange(padRef.current.toDataURL('image/png'));
   };
 
   const clear = () => {
     padRef.current?.clear();
+    setTypedSignature('');
     onChange('');
+  };
+
+  const updateTypedSignature = (event) => {
+    const nextValue = event.target.value;
+    setTypedSignature(nextValue);
+    padRef.current?.clear();
+    onChange(nextValue.trim() ? `typed:${nextValue.trim()}` : '');
   };
 
   useImperativeHandle(ref, () => ({
@@ -50,7 +60,7 @@ const SignatureCanvas = forwardRef(function SignatureCanvas(
         data-testid={testId}
         onFocus={() => setObscured(false)}
         onBlur={() => setObscured(true)}
-        className={`relative min-h-[150px] w-full overflow-hidden rounded-md border bg-white ${error ? 'border-error' : 'border-gray-300'}`}
+        className={`relative min-h-[150px] w-full overflow-hidden rounded-md border bg-white ${error ? 'border-error' : 'border-gray-500'}`}
       >
         <ReactSignatureCanvas
           ref={padRef}
@@ -72,11 +82,28 @@ const SignatureCanvas = forwardRef(function SignatureCanvas(
           </button>
         )}
       </div>
+      <div className="flex flex-col gap-1">
+        <label htmlFor={`${generatedId}-typed`} className="text-sm font-medium text-gray-700">
+          Keyboard alternative: type your full name
+        </label>
+        <input
+          id={`${generatedId}-typed`}
+          type="text"
+          autoComplete="name"
+          value={typedSignature}
+          onChange={updateTypedSignature}
+          aria-describedby={error ? errorId : undefined}
+          className="min-h-[44px] rounded-md border border-gray-500 bg-white px-3 py-2 text-base"
+        />
+        <p className="text-sm text-gray-600">
+          Typing your name provides an accessible alternative to drawing on the canvas.
+        </p>
+      </div>
       <button
         type="button"
         onClick={clear}
         data-testid={clearTestId}
-        className="min-h-[44px] rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        className="min-h-[44px] rounded-md border border-gray-500 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
       >
         Clear
       </button>

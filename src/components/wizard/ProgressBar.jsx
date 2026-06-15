@@ -11,11 +11,11 @@ export default function ProgressBar({ steps, currentIndex }) {
 
   return (
     <div className="w-full mb-6" role="group" aria-label={`Step ${current} of ${total}`}>
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-sm font-semibold text-primary">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-1">
+        <span className="min-w-0 text-sm font-semibold text-primary">
           Step {current} of {total}: {steps[currentIndex]?.label}
         </span>
-        <span className="text-sm text-gray-500">{percent}% complete</span>
+        <span className="text-sm text-gray-700">{percent}% complete</span>
       </div>
 
       <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -36,7 +36,7 @@ export default function ProgressBar({ steps, currentIndex }) {
           <li
             key={step.id}
             className={`flex flex-col items-center text-xs flex-1 ${
-              idx <= currentIndex ? 'text-primary font-medium' : 'text-gray-400'
+              idx <= currentIndex ? 'text-primary font-medium' : 'text-gray-600'
             }`}
           >
             <span
@@ -45,7 +45,7 @@ export default function ProgressBar({ steps, currentIndex }) {
                   ? 'bg-accent text-white'
                   : idx === currentIndex
                     ? 'bg-primary text-white'
-                    : 'bg-gray-200 text-gray-500'
+                    : 'bg-gray-200 text-gray-700'
               }`}
             >
               {idx < currentIndex ? '✓' : idx + 1}

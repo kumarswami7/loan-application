@@ -46,7 +46,7 @@ const Select = forwardRef(function Select(
         className={`min-h-[44px] px-3 py-2 rounded-md border text-base bg-white
           focus-visible:outline-2 focus-visible:outline-primary
           disabled:bg-gray-100 disabled:cursor-not-allowed
-          ${error ? 'border-error bg-error-light' : 'border-gray-300'}
+          ${error ? 'border-error bg-error-light' : 'border-gray-500'}
           ${className || ''}`}
         {...rest}
       >

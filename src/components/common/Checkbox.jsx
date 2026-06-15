@@ -39,6 +39,7 @@ const Checkbox = forwardRef(function Checkbox(
               *
             </span>
           )}
+          {required && <span className="sr-only"> (required)</span>}
         </span>
       </label>
 

@@ -77,6 +77,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
           label="Date of Birth"
           type="date"
           autoComplete="bday"
+          helpText="Format: YYYY-MM-DD"
           error={errors.dateOfBirth?.message}
           required
           data-testid="personalInfo-dateOfBirth"
@@ -113,6 +114,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
       <div className="grid gap-5 sm:grid-cols-2">
         <Input
           label="Father's Name"
+          autoComplete="additional-name"
           error={errors.fatherName?.message}
           required
           data-testid="personalInfo-fatherName"
@@ -121,6 +123,7 @@ const Step2PersonalInfo = forwardRef(function Step2PersonalInfo(_props, ref) {
 
         <Input
           label="Mother's Name"
+          autoComplete="additional-name"
           error={errors.motherName?.message}
           required
           data-testid="personalInfo-motherName"

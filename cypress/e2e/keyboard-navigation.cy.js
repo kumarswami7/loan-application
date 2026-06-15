@@ -30,7 +30,7 @@ describe('Keyboard navigation and accessibility', () => {
       cy.get('[data-testid="loanType-loanPurpose"]').should('be.enabled').focus().select(data.step1.loanPurpose);
       pressEnter('wizard-next');
 
-      cy.get('[data-testid="personalInfo-fullName"]').focus().type(data.step2.fullName);
+      cy.get('[data-testid="personalInfo-fullName"]').should('be.focused').type(data.step2.fullName);
       cy.get('[data-testid="personalInfo-dateOfBirth"]').focus().type(data.step2.dateOfBirth);
       pressSpace(`personalInfo-gender-${data.step2.gender}`);
       cy.get('[data-testid="personalInfo-maritalStatus"]').focus().select(data.step2.maritalStatus);

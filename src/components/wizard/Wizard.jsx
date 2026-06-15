@@ -98,7 +98,6 @@ export default function Wizard() {
     captureCurrentStepDraft();
     setCurrentStepId(stepId);
     history.pushState({ step: stepId }, '', `#${stepId}`);
-    requestAnimationFrame(() => document.getElementById('step-heading')?.focus());
   }, [captureCurrentStepDraft, visibleSteps]);
 
   const goNext = useCallback(async () => {
@@ -118,10 +117,6 @@ export default function Wizard() {
       const nextStep = visibleSteps[safeIndex + 1];
       setCurrentStepId(nextStep.id);
       history.pushState({ step: nextStep.id }, '', `#${nextStep.id}`);
-      // Move focus to the new step's heading for accessibility (WCAG 2.4.3)
-      requestAnimationFrame(() => {
-        document.getElementById('step-heading')?.focus();
-      });
     } else {
       cancelAutoSave();
       setIsSubmitting(true);
@@ -134,9 +129,6 @@ export default function Wizard() {
       captureCurrentStepDraft();
       const prevStep = visibleSteps[safeIndex - 1];
       setCurrentStepId(prevStep.id);
-      requestAnimationFrame(() => {
-        document.getElementById('step-heading')?.focus();
-      });
     }
   }, [captureCurrentStepDraft, safeIndex, visibleSteps]);
 
@@ -152,6 +144,17 @@ export default function Wizard() {
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, [goPrevious]);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      const stepContainer = document.querySelector(`[data-testid="step-${currentStepId}"]`);
+      const firstField = stepContainer?.querySelector(
+        'input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]',
+      );
+      firstField?.focus();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [currentStepId]);
 
   const handleSaveDraft = useCallback(() => {
     void triggerManualSave();
@@ -196,7 +199,7 @@ export default function Wizard() {
           onStartFresh={handleStartFresh}
         />
       )}
-      <div className="max-w-3xl mx-auto px-4 py-8">
+      <div className="mx-auto max-w-3xl px-3 py-5 sm:px-4 sm:py-8">
         <header className="mb-6">
           <h1 className="text-2xl font-bold text-primary">LendSwift Loan Application</h1>
           <p className="text-sm text-gray-500">
@@ -207,13 +210,10 @@ export default function Wizard() {
         <ProgressBar steps={visibleSteps} currentIndex={safeIndex} />
 
         <main
-          className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 sm:p-6"
+          role="main"
+          className="rounded-lg border border-gray-300 bg-white p-4 shadow-sm sm:p-6"
           aria-live="polite"
         >
-          {/* tabIndex=-1 lets us programmatically focus this on step change */}
-          <h2 id="step-heading" tabIndex={-1} className="sr-only">
-            {currentStep.label}
-          </h2>
           <div data-testid={`step-${currentStep.id}`}>
             <StepComponent
               ref={stepRef}

@@ -47,7 +47,7 @@ function DefaultPreview({ entry, onRemove, testId, index }) {
         onClick={onRemove}
         aria-label={`Remove ${name}`}
         data-testid={`remove-${testId}-${index}`}
-        className="min-h-[44px] min-w-[44px] rounded-md border border-gray-300 text-xl text-gray-600"
+        className="min-h-[44px] min-w-[44px] rounded-md border border-gray-500 text-xl text-gray-700"
       >
         &times;
       </button>
@@ -161,9 +161,13 @@ export default function FileUpload({
         {required && <span className="sr-only"> (required)</span>}
       </p>
       <div
-        {...getRootProps()}
+        {...getRootProps({
+          role: 'button',
+          'aria-label': `Upload ${label}, drag and drop or click`,
+          'aria-describedby': displayedError ? errorId : undefined,
+        })}
         data-testid={testId}
-        className={`cursor-pointer rounded-md border-2 border-dashed p-5 text-center ${displayedError ? 'border-error bg-error-light' : 'border-gray-300 hover:border-primary'} ${isDragActive ? 'bg-primary/5' : ''}`}
+        className={`min-h-[88px] cursor-pointer rounded-md border-2 border-dashed p-5 text-center ${displayedError ? 'border-error bg-error-light' : 'border-gray-500 hover:border-primary'} ${isDragActive ? 'bg-primary/5' : ''}`}
       >
         <input {...getInputProps({ 'aria-describedby': displayedError ? errorId : undefined })} />
         <p className="text-sm font-medium text-gray-700">Drag &amp; drop files here, or click to browse</p>

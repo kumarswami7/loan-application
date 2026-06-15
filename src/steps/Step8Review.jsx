@@ -32,6 +32,21 @@ function formatDate(value) {
     : new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
 }
 
+function SignatureDisplay({ value, alt }) {
+  if (!value) return <p className="text-sm text-error">Signature missing</p>;
+  if (value.startsWith('typed:')) {
+    return <p className="min-h-24 break-words font-serif text-2xl italic text-gray-900">{value.slice(6)}</p>;
+  }
+  return <img src={value} alt={alt} width="480" height="96" className="h-24 w-full object-contain" />;
+}
+
+SignatureDisplay.propTypes = {
+  value: PropTypes.string,
+  alt: PropTypes.string.isRequired,
+};
+
+SignatureDisplay.defaultProps = { value: '' };
+
 function makeReferenceNumber() {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
@@ -304,16 +319,14 @@ const Step8Review = forwardRef(function Step8Review({ onReadinessChange }, ref) 
         <div className="mt-3 grid gap-4 sm:grid-cols-2">
           <div data-testid="applicant-signature-display" className="rounded-md border border-gray-200 p-3">
             <p className="mb-2 text-sm font-medium">Your Signature</p>
-            {formData.documents?.applicantSignature
-              ? <img src={formData.documents.applicantSignature} alt="Your Signature" className="h-24 w-full object-contain" />
-              : <p className="text-sm text-error">Signature missing</p>}
+            <SignatureDisplay value={formData.documents?.applicantSignature} alt="Applicant's signature" />
           </div>
           {isCoApplicantStepVisible(formData) && (
             <div className="rounded-md border border-gray-200 p-3">
               <p className="mb-2 text-sm font-medium">Co-Applicant Signature</p>
-              {formData.documents?.coApplicantSignature
-                ? <img data-testid="coApplicant-signature-display" src={formData.documents.coApplicantSignature} alt="Co-Applicant Signature" className="h-24 w-full object-contain" />
-                : <p className="text-sm text-error">Signature missing</p>}
+              <div data-testid="coApplicant-signature-display">
+                <SignatureDisplay value={formData.documents?.coApplicantSignature} alt="Co-applicant's signature" />
+              </div>
             </div>
           )}
         </div>

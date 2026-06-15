@@ -10,11 +10,11 @@ export default {
           dark: '#163A5C',
         },
         accent: {
-          DEFAULT: '#27AE60',
+          DEFAULT: '#1E7A45',
           light: '#3FCB7C',
         },
         error: {
-          DEFAULT: '#E74C3C',
+          DEFAULT: '#B42318',
           light: '#FBE5E3',
         },
         warning: {

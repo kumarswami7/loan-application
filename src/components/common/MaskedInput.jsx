@@ -104,7 +104,7 @@ const MaskedInput = forwardRef(function MaskedInput(
             tracking-wider font-mono
             focus-visible:outline-2 focus-visible:outline-primary
             disabled:bg-gray-100 disabled:cursor-not-allowed
-            ${error ? 'border-error bg-error-light' : 'border-gray-300 bg-white'}
+            ${error ? 'border-error bg-error-light' : 'border-gray-500 bg-white'}
             ${className || ''}`}
         />
 
@@ -131,6 +131,7 @@ const MaskedInput = forwardRef(function MaskedInput(
               onClick={() => setRevealed((r) => !r)}
               className="text-xs text-primary underline focus-visible:outline-2 focus-visible:outline-primary px-1 min-h-[28px]"
               aria-pressed={revealed}
+              aria-label={`${revealed ? 'Hide' : 'Show'} ${label}`}
             >
               {revealed ? 'Hide' : 'Show'}
             </button>

@@ -47,7 +47,7 @@ export default function ResumeDraftModal({ loanType, onResume, onStartFresh }) {
             ref={freshButtonRef}
             type="button"
             onClick={onStartFresh}
-            className="min-h-[44px] rounded-md border border-gray-300 px-4 py-2 font-medium text-gray-700"
+            className="min-h-[44px] rounded-md border border-gray-500 px-4 py-2 font-medium text-gray-700"
           >
             Start Fresh
           </button>

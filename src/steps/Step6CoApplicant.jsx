@@ -43,8 +43,6 @@ const Step6CoApplicant = forwardRef(function Step6CoApplicant(_props, ref) {
       coApplicantPAN: savedData.coApplicantPAN || '',
       coApplicantIncome: savedData.coApplicantIncome || '',
       coApplicantConsent: savedData.coApplicantConsent || false,
-      // TODO Phase 8: replace with SignatureCanvas data from
-      // formData.documents.coApplicantSignature.
       coApplicantSignature: savedData.coApplicantSignature || 'PENDING_SIGNATURE',
     },
   });
