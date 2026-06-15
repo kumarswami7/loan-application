@@ -1,0 +1,8 @@
+{
+  "step1": { "loanType": "Home", "loanAmount": "5000000", "loanTenure": "240", "loanPurpose": "Home purchase" },
+  "step2": { "fullName": "Ishita Verma", "dateOfBirth": "1988-08-20", "gender": "Female", "maritalStatus": "Married", "fatherName": "Mohan Verma", "motherName": "Kavita Verma", "email": "ishita.verma@example.com", "mobileNumber": "9867543210" },
+  "step3": { "panNumber": "ABCPE1234F", "aadhaarNumber": "234567890124" },
+  "step4": { "currentAddressLine1": "45 Beach Road", "currentPincode": "530001", "residenceType": "Owned", "yearsAtCurrentAddress": "5" },
+  "step5": { "companyName": "HDFC Bank", "designation": "Vice President", "monthlyNetSalary": "500000", "yearsOfExperience": "12" },
+  "step6": { "coApplicantName": "Rohan Verma", "relationship": "Spouse", "coApplicantPAN": "XYZPA5678B", "coApplicantIncome": "200000" }
+}

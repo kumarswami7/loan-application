@@ -1,0 +1,7 @@
+{
+  "step1": { "loanType": "Personal", "loanAmount": "500000", "loanTenure": "36", "loanPurpose": "Medical expenses" },
+  "step2": { "fullName": "Aarav Sharma", "dateOfBirth": "1990-05-15", "gender": "Male", "maritalStatus": "Single", "fatherName": "Rajesh Sharma", "motherName": "Sunita Sharma", "email": "aarav.sharma@example.com", "mobileNumber": "9876543210" },
+  "step3": { "panNumber": "ABCPE1234F", "aadhaarNumber": "234567890124" },
+  "step4": { "currentAddressLine1": "12 MG Road", "currentPincode": "520001", "residenceType": "Owned", "yearsAtCurrentAddress": "3" },
+  "step5": { "companyName": "Infosys", "designation": "Senior Engineer", "monthlyNetSalary": "100000", "yearsOfExperience": "8" }
+}

@@ -1,0 +1,8 @@
+{
+  "step1": { "loanType": "Business", "loanAmount": "3000000", "loanTenure": "48", "loanPurpose": "Business expansion" },
+  "step2": { "fullName": "Kabir Mehta", "dateOfBirth": "1985-03-10", "gender": "Male", "maritalStatus": "Married", "fatherName": "Suresh Mehta", "motherName": "Anita Mehta", "email": "kabir.mehta@example.com", "mobileNumber": "9765432109" },
+  "step3": { "panNumber": "ABCFE1234F", "aadhaarNumber": "234567890124" },
+  "step4": { "currentAddressLine1": "88 Commerce Street", "currentPincode": "380001", "residenceType": "Owned", "yearsAtCurrentAddress": "4" },
+  "step5": { "businessName": "Mehta Trading Co", "businessType": "Sole Proprietorship", "annualTurnover": "12000000", "yearsInBusiness": "7", "gstNumber": "24ABCFE1234F1Z5", "officeAddressLine1": "19 Market Yard", "officePincode": "380001", "yearsOfExperience": "10" },
+  "step6": { "coApplicantName": "Nisha Mehta", "relationship": "Spouse", "coApplicantPAN": "XYZPA5678B", "coApplicantIncome": "150000" }
+}
