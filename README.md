@@ -132,6 +132,10 @@ Lighthouse values should be recorded from Chrome DevTools against the deployed p
 
 Final screenshots should be captured from the production build at 1280px and 375px and stored in `screenshots/` using `step1-desktop.png`, `step1-mobile.png`, through `step8-desktop.png`, `step8-mobile.png`.
 
+<img width="351" height="719" alt="Screenshot 2026-06-15 111612" src="https://github.com/user-attachments/assets/3ab9a801-beda-48c9-b889-d444d7682639" />
+<img width="1886" height="862" alt="Screenshot 2026-06-15 111625" src="https://github.com/user-attachments/assets/23315d45-b770-4aaa-b742-b97193547f75" />
+
+
 ## Known Limitations
 
 - PAN, Aadhaar, and credit checks are simulated; no government or bureau API is called.
@@ -145,4 +149,5 @@ Final screenshots should be captured from the production build at 1280px and 375
 
 ## Deployment
 
-Deployment pending. The Vite build is compatible with Vercel or Netlify using `npm run build` and the `dist` output directory.
+Deployment link : loan-application-drab.vercel.app
+
